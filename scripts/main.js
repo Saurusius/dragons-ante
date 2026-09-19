@@ -821,8 +821,8 @@ function renderShop() {
         <button class="da-shop-side-continue ${next.isBoss ? "is-boss" : ""}" data-action="leave-shop">
           <small>PROCHAINE MISE</small>
           <strong>${escapeHtml(next.name)}</strong>
-          <span>${formatNumber(next.target)} pts · Affronter →</span>
-          <p>${escapeHtml(next.description)}</p>
+          <span class="da-shop-side-target">${formatNumber(next.target)} pts · Affronter →</span>
+          <span class="da-shop-side-description">${escapeHtml(next.description)}</span>
         </button>
       </aside>
 

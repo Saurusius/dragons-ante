@@ -2909,7 +2909,19 @@
 
 .da-shop-side-continue {
   margin-top: auto;
+  min-height: 120px;
+  height: auto;
   padding: 12px 13px;
+
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  align-content: start;
+  align-items: start;
+  justify-content: stretch;
+  justify-items: stretch;
+  gap: 0;
+
+  white-space: normal;
   background: linear-gradient(145deg,#6d2834,#431921);
   color: #f7e5c5;
   box-shadow: 0 8px 20px rgba(0,0,0,.22);
@@ -2926,18 +2938,21 @@
   margin-top: 3px;
   font: 700 18px/1.05 Georgia,"Times New Roman",serif;
 }
-.da-shop-side-continue > span {
+.da-shop-side-target {
   display: block;
   margin-top: 4px;
   color: #ffd77b;
   font-size: 12px;
   font-weight: 900;
+  overflow-wrap: anywhere;
 }
-.da-shop-side-continue p {
-  margin: 6px 0 0;
+.da-shop-side-description {
+  display: block;
+  margin-top: 6px;
   color: #c4aaa2;
   font-size: 10.5px;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 .da-shop-side-continue.is-boss { border-color: rgba(232,179,76,.65); background: linear-gradient(145deg,#714017,#3e1d0e); }
 .da-shop-side-continue:hover,.da-shop-side-reroll:hover:not(:disabled) { filter: brightness(1.08); }
