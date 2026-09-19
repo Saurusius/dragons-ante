@@ -104,6 +104,10 @@ export function createLauncherController({
     document.body.appendChild(button);
     restorePosition(button);
     makeDraggable(button);
+    button.addEventListener("click", event => {
+      if (event.detail !== 0) return;
+      onToggle?.();
+    });
     return button;
   }
 
