@@ -745,7 +745,7 @@ function syncMusic(force = false) {
   if (!soundEnabled) { audio.pause(); return; }
   const appVisible = document.getElementById(APP_ID)?.classList.contains("da-visible");
   if (!appVisible) return;
-  const desired = !state ? HOME_TRACK : (state.run?.phase === "blind" || state.run?.phase === "shop" || state.run?.phase === "blind-complete" || state.run?.phase === "run-over" || state.run?.phase === "run-won") ? GAME_TRACK : HOME_TRACK;
+  const desired = !state || currentView === "home" ? HOME_TRACK : (state.run?.phase === "blind" || state.run?.phase === "shop" || state.run?.phase === "blind-complete" || state.run?.phase === "run-over" || state.run?.phase === "run-won") ? GAME_TRACK : HOME_TRACK;
   const current = audio.getAttribute("data-track") || "";
   const route = current !== desired || force;
   if (route) {
@@ -775,7 +775,7 @@ function renderHome() {
           <p class="da-kicker">POKER ROGUELIKE FANTASY</p>
           <img class="da-home-logo" src="${HOME_LOGO}?v=${MODULE_VERSION}" alt="Dragon's Ante">
           <p class="da-subtitle">Huit Antes. Une table. Beaucoup trop de décisions cupides et franchement excellentes.</p>
-          <div class="da-home-art-tag">${MODULE_VERSION} · UI Polish</div>
+          <div class="da-home-art-tag">${MODULE_VERSION} · Table Redesign</div>
 
           <div class="da-home-actions">
             ${hasSave ? `<button class="da-button da-button-main" data-action="continue">Continuer la run</button>` : ""}
@@ -786,7 +786,7 @@ function renderHome() {
           ${hasSave ? saveSummary(summary) : `<div class="da-save-summary"><small>NOUVELLE ÈRE</small><strong>Dragon's Ante v${MODULE_VERSION}</strong><span>Collection · statistiques · succès · déblocages</span></div>`}
         </div>
       </div>
-      <div class="da-version">v${MODULE_VERSION} · UI Polish · Chroniques du Dragon · 150 Atouts</div>
+      <div class="da-version">v${MODULE_VERSION} · Table Redesign · Chroniques du Dragon · 150 Atouts</div>
     </main>
   `);
   if (overlay) document.querySelector(".da-shell")?.insertAdjacentHTML("beforeend", renderOverlay());
@@ -1339,7 +1339,7 @@ function handName(key) {
 function cardHtml(card, selected, index = null) {
   const red = card.color === "red";
   return `
-    <button type="button" class="da-card ${red ? "is-red" : "is-black"} ${selected ? "is-selected" : ""} ${card.edition ? `edition-${card.edition}` : ""}" data-action="toggle-card" data-card-id="${card.id}" aria-pressed="${selected}" aria-label="${index !== null ? `Carte ${index + 1} · ` : ""}${escapeAttr(cardTitle(card))}" title="${escapeAttr(cardTitle(card))}">
+    <button type="button" class="da-card ${red ? "is-red" : "is-black"} ${selected ? "is-selected" : ""} ${card.enhancement ? `enh-${card.enhancement}` : ""} ${card.edition ? `edition-${card.edition}` : ""}" data-action="toggle-card" data-card-id="${card.id}" aria-pressed="${selected}" aria-label="${index !== null ? `Carte ${index + 1} · ` : ""}${escapeAttr(cardTitle(card))}" title="${escapeAttr(cardTitle(card))}">
       <span class="da-card-corner da-card-corner-top"><strong>${card.rankLabel}</strong><i>${card.suitSymbol}</i></span>
       <span class="da-card-center">${card.suitSymbol}</span>
       ${card.bonusChips ? `<span class="da-card-bonus">+${card.bonusChips}</span>` : ""}
@@ -1353,7 +1353,7 @@ function cardHtml(card, selected, index = null) {
 function playedCardHtml(card) {
   const red = card.color === "red";
   return `
-    <div class="da-card da-table-card ${red ? "is-red" : "is-black"} ${card.edition ? `edition-${card.edition}` : ""}">
+    <div class="da-card da-table-card ${red ? "is-red" : "is-black"} ${card.enhancement ? `enh-${card.enhancement}` : ""} ${card.edition ? `edition-${card.edition}` : ""}">
       <span class="da-card-corner da-card-corner-top"><strong>${card.rankLabel}</strong><i>${card.suitSymbol}</i></span>
       <span class="da-card-center">${card.suitSymbol}</span>
       <span class="da-card-corner da-card-corner-bottom"><strong>${card.rankLabel}</strong><i>${card.suitSymbol}</i></span>
@@ -1406,7 +1406,7 @@ function saveSummary(summary) {
 }
 
 function shell(content) {
-  const shortcuts = state && currentView === "game"
+  const shortcuts = state && currentView === "game" && state.run?.phase === "blind"
     ? `<div class="da-shortcut-strip" aria-hidden="true"><span><b>1–8</b> sélectionner</span><span><b>Entrée</b> jouer</span><span><b>D</b> défausser</span><span><b>Échap</b> fermer</span></div>`
     : "";
 
