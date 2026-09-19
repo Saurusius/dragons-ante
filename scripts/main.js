@@ -5,7 +5,8 @@ import {
   playSelected,
   discardSelected,
   sanitizeState,
-  HANDS
+  HANDS,
+  STATE_SCHEMA_VERSION
 } from "./engines/poker-engine.js";
 
 import {
@@ -529,8 +530,12 @@ function migrateStableState(current) {
   if (!current) return false;
   let changed = false;
 
-  if (current.version !== MODULE_VERSION) {
-    current.version = MODULE_VERSION;
+  if (Number(current.schemaVersion || 0) < STATE_SCHEMA_VERSION) {
+    current.schemaVersion = STATE_SCHEMA_VERSION;
+    changed = true;
+  }
+  if ("version" in current) {
+    delete current.version;
     changed = true;
   }
 
