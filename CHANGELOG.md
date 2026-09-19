@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.5.5 — Stabilisation
+
+- Correction de l’évaluation des Suites, Couleurs et Quintes Flush avec **Four Fingers** : les combinaisons utilisent désormais le vrai sous-ensemble de cartes qui score.
+- Correction de **Eight Ball**, auparavant marqué fonctionnel sans effet runtime.
+- Migration automatique de l’ancien système `tarot / spectral / planet` vers l’inventaire `arcanes / constellations / presages`, sans perte des récompenses en attente.
+- **Certificate** génère désormais uniquement des sceaux réellement pris en charge par le moteur.
+- Les Atouts ne sont plus tous enregistrés comme déclenchés à chaque main : animations et statistiques reposent maintenant sur des effets effectivement appliqués.
+- Les effets post-jeu importants alimentent également le suivi des Atouts réellement déclenchés.
+- **Swashbuckler** calcule maintenant son bonus à partir de la vraie valeur de revente des autres Atouts.
+- Extraction des règles d’économie dans `economy-engine.js`.
+- Les boosters ouverts doivent désormais être résolus avant de relancer ou quitter la boutique ; un booster en attente est restauré après rechargement.
+- Navigation Accueil / Jeu rendue explicite pour éviter les changements d’écran involontaires à la fermeture des overlays.
+- Version runtime dérivée du manifeste Foundry ; suppression des références internes codées en dur à 0.5.3.
+- Version du schéma de sauvegarde découplée de la version du module.
+- `install-local.ps1` lit désormais la version directement depuis `module.json`.
+- Ajout d’une suite de tests Node couvrant les principales régressions de stabilisation.
+- Les workflows Dev, promotion et publication exécutent désormais les tests avant validation.
+
+
 ## 0.5.3 — UI Polish & Atout Cards
 
 - Boutique réorganisée : relance, statistiques de boutique et accès à la prochaine Mise déplacés dans la barre latérale.
