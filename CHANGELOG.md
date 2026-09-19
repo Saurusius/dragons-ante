@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.1 — Lisibilité
+
+- Correction des choix de booster dont les titres, catégories et descriptions pouvaient se chevaucher sous les styles natifs de Foundry.
+- Les boutons de récompense utilisent désormais une hauteur naturelle, un wrapping fiable et une grille dédiée titre / catégorie.
+- Ajout d’une pile typographique UI unique pour les contrôles, labels, descriptions et textes fonctionnels.
+- La police serif fantasy est désormais réservée aux grands titres et éléments décoratifs.
+- Suppression des anciennes poches de typographie serif dans les composants fonctionnels.
+- Ajout de tests de non-régression sur la typographie et le layout des boosters.
+
+
 ## 0.6.0 — Table Redesign
 
 - Refonte complète de l’écran de jeu autour d’une hiérarchie visuelle inspirée des grands poker-roguelikes : cockpit de score à gauche, Atouts en rack supérieur, table centrale plus lisible et actions renforcées.
