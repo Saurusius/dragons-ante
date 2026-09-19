@@ -388,7 +388,14 @@ async function handleClick(event) {
     }
 
     if (action === "leave-shop") {
-      leaveShop(state);
+      if (!leaveShop(state)) {
+        if (state.run?.shop?.pendingBooster) {
+          overlay = { type: "booster" };
+          pushNotice("Choisissez la récompense du booster avant de quitter la boutique.", "warn");
+          return render();
+        }
+        return;
+      }
       await saveState();
       renderGame();
       const blind = getBlind(state);
@@ -512,8 +519,9 @@ function renderCatalogGridOnly() {
 async function confirmNewRun() {
   overlay = null;
   await startNewRun(true);
+  currentView = "game";
   catalogOpen = false;
-  renderGame();
+  render();
 }
 
 
