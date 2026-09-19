@@ -1025,7 +1025,17 @@ function renderOverlay() {
           <small>BOOSTER OUVERT</small>
           <h3>${escapeHtml(pending.name)}</h3>
           <p>Choisissez 1 récompense parmi 3.</p>
-          <div class="da-booster-choices">${pending.choices.map((choice,index)=>`<button class="da-booster-choice" data-action="choose-booster" data-choice-index="${index}">${escapeHtml(choice.label || choice.id)}</button>`).join("")}</div>
+          <div class="da-booster-choices">${pending.choices.map((choice,index) => {
+            const consumable = choice.type === "consumable" ? getConsumable(choice.id) : null;
+            const effect = consumable?.description || "";
+            return `<button type="button" class="da-booster-choice" data-action="choose-booster" data-choice-index="${index}">
+              <span class="da-booster-choice-header">
+                <strong>${escapeHtml(choice.label || choice.id)}</strong>
+                ${consumable ? `<small>${escapeHtml(categoryLabel(consumable.category))}</small>` : ""}
+              </span>
+              ${effect ? `<span class="da-booster-choice-effect">${escapeHtml(effect)}</span>` : ""}
+            </button>`;
+          }).join("")}</div>
           <div class="da-modal-actions"><button class="da-button da-button-quiet" data-action="close-overlay">Fermer</button></div>
         </section>
       </div>

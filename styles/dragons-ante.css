@@ -2101,7 +2101,11 @@
 .da-target-card small { display:block; margin-top:4px; color:#a49682; font-size:9px; font-weight:600; letter-spacing:0; }
 .da-target-card.mini strong { font-size:14px; }
 .da-booster-choices { display:grid; gap:8px; }
-.da-booster-choice { padding:11px 12px; border:1px solid rgba(224,179,91,.18); border-radius:9px; background:#2a211c; color:#f0e2c6; text-align:left; cursor:pointer; }
+.da-booster-choice { padding:11px 12px; border:1px solid rgba(224,179,91,.18); border-radius:9px; background:#2a211c; color:#f0e2c6; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+.da-booster-choice-header { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; }
+.da-booster-choice-header strong { font-size:12px; line-height:1.35; }
+.da-booster-choice-header small { flex:0 0 auto; color:#c5a760; font-size:8px; font-weight:900; letter-spacing:.1em; }
+.da-booster-choice-effect { display:block; color:#b8aa96; font-size:10px; line-height:1.45; }
 .da-booster-choice:hover { background:#352923; }
 .da-shop-suboffers { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; margin-top:14px; }
 .da-shop-suboffer { min-height:170px; padding:15px; border:1px solid rgba(255,255,255,.08); border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,.02), transparent), #241d19; display:flex; flex-direction:column; }
