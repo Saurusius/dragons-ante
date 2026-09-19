@@ -27,7 +27,7 @@ Dragon's Ante est encore en évolution : de nouveaux Atouts, mécaniques et raff
 
 ## 📦 Installation
 
-### Depuis Foundry VTT
+### Méthode recommandée — depuis Foundry VTT
 
 Dans **Add-on Modules → Install Module**, utilisez l'URL du manifeste :
 
@@ -35,9 +35,17 @@ Dans **Add-on Modules → Install Module**, utilisez l'URL du manifeste :
 https://github.com/Saurusius/dragons-ante/releases/latest/download/module.json
 ```
 
+Foundry utilisera automatiquement le ZIP correspondant à la dernière version stable publiée et pourra ensuite détecter les futures mises à jour du module.
+
 ### Installation manuelle
 
-1. Téléchargez l'archive `dragons-ante-vX.Y.Z.zip` depuis la page **Releases** du dépôt.
+La dernière release est toujours disponible ici :
+
+```text
+https://github.com/Saurusius/dragons-ante/releases/latest
+```
+
+1. Téléchargez l'archive `dragons-ante-vX.Y.Z.zip`.
 2. Extrayez le dossier `dragons-ante` dans :
 
 ```text
