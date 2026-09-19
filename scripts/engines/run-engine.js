@@ -120,8 +120,6 @@ export function bossForAnte(ante, state = null) {
 }
 
 export function ensureRunState(state) {
-  ensureJokerState(state);
-
   if (!state.run || typeof state.run !== "object") {
     state.run = {
       version: 1,
@@ -145,6 +143,7 @@ export function ensureRunState(state) {
 
   state.run.maxAnte ??= MAX_ANTE;
   ensureRunRandomState(state);
+  ensureJokerState(state);
   ensureBossOrder(state);
   state.run.ante = Math.max(1, Number(state.run.ante || 1));
   state.run.blindIndex = Math.max(0, Math.min(2, Number(state.run.blindIndex || 0)));
