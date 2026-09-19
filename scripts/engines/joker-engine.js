@@ -391,57 +391,85 @@ export function afterPlay({state,cards,result,baseResult}) {
   state.runHandsPlayed += 1;
   state.runHandCounts[baseResult.key]=(state.runHandCounts[baseResult.key]||0)+1;
   state.roundHandCounts[baseResult.key]=(state.roundHandCounts[baseResult.key]||0)+1;
+  const markUsed = id => {
+    result.usedJokers ??= [];
+    if (!result.usedJokers.includes(id)) result.usedJokers.push(id);
+  };
 
   const scored = cards.filter(c=>result.scoringCardIds.includes(c.id));
   const scoringFace=scored.some(c=>isFace(c,state));
   const bus=getState(state,"ride-the-bus");
-  if(hasJoker(state,"ride-the-bus")) bus.mult=scoringFace ? 0 : (bus.mult||0)+1;
+  if(hasJoker(state,"ride-the-bus")) {
+    const before=Number(bus.mult||0);
+    bus.mult=scoringFace ? 0 : before+1;
+    if (bus.mult !== before) markUsed("ride-the-bus");
+  }
 
   if(hasJoker(state,"runner") && baseResult.tags.includes("straight")) {
-    const js=getState(state,"runner"); js.chips=(js.chips||0)+15;
+    const js=getState(state,"runner"); js.chips=(js.chips||0)+15; markUsed("runner");
   }
   if(hasJoker(state,"green-joker")) {
-    const js=getState(state,"green-joker"); js.mult=(js.mult||0)+1;
+    const js=getState(state,"green-joker"); js.mult=(js.mult||0)+1; markUsed("green-joker");
   }
   if(hasJoker(state,"square-joker") && cards.length===4) {
-    const js=getState(state,"square-joker"); js.chips=(js.chips||0)+4;
+    const js=getState(state,"square-joker"); js.chips=(js.chips||0)+4; markUsed("square-joker");
   }
   if(hasJoker(state,"spare-trousers") && baseResult.tags.includes("two-pair")) {
-    const js=getState(state,"spare-trousers"); js.mult=(js.mult||0)+2;
+    const js=getState(state,"spare-trousers"); js.mult=(js.mult||0)+2; markUsed("spare-trousers");
   }
   if(hasJoker(state,"space-joker") && chance(state,1,4)) {
     state.handLevels[baseResult.key]=(state.handLevels[baseResult.key]||1)+1;
+    markUsed("space-joker");
   }
-  if(hasJoker(state,"hiker")) for(const card of scored) card.bonusChips=(card.bonusChips||0)+5;
+  if(hasJoker(state,"hiker") && scored.length) {
+    for(const card of scored) card.bonusChips=(card.bonusChips||0)+5;
+    markUsed("hiker");
+  }
   if(hasJoker(state,"wee-joker") && scored.some(c=>c.rank==="2")) {
     const count=scored.filter(c=>c.rank==="2").length;
-    const js=getState(state,"wee-joker"); js.chips=(js.chips||0)+8*count;
+    const js=getState(state,"wee-joker"); js.chips=(js.chips||0)+8*count; markUsed("wee-joker");
   }
   if(hasJoker(state,"dna") && state.roundHandsPlayed===1 && cards.length===1) {
-    const copy=clonePlayingCard(cards[0],`${Date.now()}-dna`); state.drawPile.unshift(copy); state.cardsAdded+=1; onCardAdded(state);
+    const copy=clonePlayingCard(cards[0],`${Date.now()}-dna`); state.drawPile.unshift(copy); state.cardsAdded+=1; onCardAdded(state); markUsed("dna");
   }
   if(hasJoker(state,"sixth-sense") && state.roundHandsPlayed===1 && cards.length===1 && cards[0].rank==="6") {
     // Remove original from played pile: it is destroyed instead.
-    state.played=state.played.filter(c=>c.id!==cards[0].id); state.cardsDestroyed+=1; state.consumables.spectral+=1;
+    state.played=state.played.filter(c=>c.id!==cards[0].id);
+    state.cardsDestroyed+=1;
+    grantRandomConsumable(state,"presages");
+    markUsed("sixth-sense");
   }
-  if(hasJoker(state,"superposition") && baseResult.tags.includes("straight") && cards.some(c=>c.rank==="A")) state.consumables.tarot+=1;
-  if(hasJoker(state,"seance") && baseResult.key==="straight-flush") state.consumables.spectral+=1;
-  if(hasJoker(state,"vagabond") && state.money<=4) state.consumables.tarot+=1;
-  if(hasJoker(state,"to-do-list") && baseResult.key===state.targetHand) state.money+=4;
-  if(hasJoker(state,"midas-mask")) for(const card of scored) if(isFace(card,state)) card.enhancement="gold";
+  if(hasJoker(state,"superposition") && baseResult.tags.includes("straight") && cards.some(c=>c.rank==="A")) {
+    if (grantRandomConsumable(state,"arcanes")) markUsed("superposition");
+  }
+  if(hasJoker(state,"seance") && baseResult.key==="straight-flush") {
+    if (grantRandomConsumable(state,"presages")) markUsed("seance");
+  }
+  if(hasJoker(state,"vagabond") && state.money<=4) {
+    if (grantRandomConsumable(state,"arcanes")) markUsed("vagabond");
+  }
+  if(hasJoker(state,"to-do-list") && baseResult.key===state.targetHand) { state.money+=4; markUsed("to-do-list"); }
+  if(hasJoker(state,"midas-mask")) {
+    const faces=scored.filter(c=>isFace(c,state));
+    if (faces.length) {
+      for(const card of faces) card.enhancement="gold";
+      markUsed("midas-mask");
+    }
+  }
   if(hasJoker(state,"vampire")) {
     const enhanced=scored.filter(c=>c.enhancement);
     if(enhanced.length) {
       const js=getState(state,"vampire"); js.xmult=(js.xmult||1)+0.1*enhanced.length;
       enhanced.forEach(c=>c.enhancement=null);
+      markUsed("vampire");
     }
   }
   if(hasJoker(state,"lucky-cat")) {
     const lucky=scored.filter(c=>c.enhancement==="lucky" && chance(state,1,5));
-    if(lucky.length){ const js=getState(state,"lucky-cat"); js.xmult=(js.xmult||1)+0.25*lucky.length; }
+    if(lucky.length){ const js=getState(state,"lucky-cat"); js.xmult=(js.xmult||1)+0.25*lucky.length; markUsed("lucky-cat"); }
   }
   if(hasJoker(state,"seltzer")) {
-    const js=getState(state,"seltzer"); js.handsLeft=Math.max(0,(js.handsLeft ?? 10)-1);
+    const js=getState(state,"seltzer"); js.handsLeft=Math.max(0,(js.handsLeft ?? 10)-1); markUsed("seltzer");
   }
 }
 
