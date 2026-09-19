@@ -1,8 +1,8 @@
 {
   "id": "dragons-ante",
   "title": "Dragon's Ante",
-  "description": "Dragon's Ante, poker roguelike fantasy pour Foundry VTT — v0.5.4 : lisibilité améliorée dans la boutique, affichage des crédits marchands ajusté et effets des consommables visibles dans les boosters.",
-  "version": "0.5.4",
+  "description": "Dragon's Ante, poker roguelike fantasy pour Foundry VTT — v0.5.5 : stabilisation du moteur, des consommables, des Atouts, des boosters et de la navigation.",
+  "version": "0.5.5",
   "authors": [
     {
       "name": "Saurusius"
@@ -33,5 +33,5 @@
   ],
   "url": "https://github.com/Saurusius/dragons-ante",
   "manifest": "https://github.com/Saurusius/dragons-ante/releases/latest/download/module.json",
-  "download": "https://github.com/Saurusius/dragons-ante/releases/download/v0.5.4/dragons-ante-v0.5.4.zip"
+  "download": "https://github.com/Saurusius/dragons-ante/releases/download/v0.5.5/dragons-ante-v0.5.5.zip"
 }
