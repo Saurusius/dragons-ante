@@ -2,6 +2,7 @@ import { JOKERS, JOKER_MAP } from "../data/jokers-data.js";
 import { HANDS, drawToHand, clonePlayingCard, randomPlayingCard, evaluateHand } from "./poker-engine.js";
 import { grantRandomConsumable } from "./deck-engine.js";
 import { sellValue } from "./economy-engine.js";
+import { runRandom, runRandomFn } from "../core/random.js";
 
 const MAX_JOKERS = 5;
 const SUITS = ["spades", "hearts", "diamonds", "clubs"];
@@ -10,6 +11,7 @@ const RANKS = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
 export { JOKERS, JOKER_MAP, MAX_JOKERS };
 
 export function ensureJokerState(state) {
+  const random = runRandomFn(state);
   state.jokers ??= [];
   state.jokerState ??= {};
   state.money ??= 4;
@@ -29,22 +31,23 @@ export function ensureJokerState(state) {
   state.shopRerolls ??= 0;
   state.inventory ??= { arcanes: [], constellations: [], presages: [] };
   state.globalSellBonus ??= 0;
-  state.targetHand ??= randomChoice(["pair","two-pair","three-kind","straight","flush"]);
-  state.targetRank ??= randomChoice(RANKS);
-  state.targetSuit ??= randomChoice(SUITS);
-  state.idolRank ??= randomChoice(RANKS);
-  state.idolSuit ??= randomChoice(SUITS);
-  state.ancientSuit ??= randomChoice(SUITS);
-  state.castleSuit ??= randomChoice(SUITS);
+  state.targetHand ??= randomChoice(["pair","two-pair","three-kind","straight","flush"], random);
+  state.targetRank ??= randomChoice(RANKS, random);
+  state.targetSuit ??= randomChoice(SUITS, random);
+  state.idolRank ??= randomChoice(RANKS, random);
+  state.idolSuit ??= randomChoice(SUITS, random);
+  state.ancientSuit ??= randomChoice(SUITS, random);
+  state.castleSuit ??= randomChoice(SUITS, random);
 
   for (const id of state.jokers) getState(state,id);
   return state;
 }
 
 function randomChoice(arr, random=Math.random) { return arr[Math.floor(random()*arr.length)]; }
-function chance(state, numerator, denominator, random=Math.random) {
+function chance(state, numerator, denominator, random=null) {
   const doubled = hasJoker(state,"oops-all-sixes") ? 2 : 1;
-  return random() < Math.min(1, (numerator*doubled)/denominator);
+  const rng = random || runRandomFn(state);
+  return rng() < Math.min(1, (numerator*doubled)/denominator);
 }
 function hasJoker(state,id) { return state.jokers?.includes(id); }
 function getState(state,id) { return state.jokerState[id] ??= {}; }
@@ -108,27 +111,29 @@ export function moveJoker(state,id,direction) {
 
 export function fillRandomJokers(state,count=5) {
   ensureJokerState(state);
+  const random=runRandomFn(state);
   const pool=JOKERS.filter(j=>j.status==="live" && !state.jokers.includes(j.id));
   while (state.jokers.length < Math.min(MAX_JOKERS,count) && pool.length) {
-    const i=Math.floor(Math.random()*pool.length);
+    const i=Math.floor(random()*pool.length);
     equipJoker(state,pool.splice(i,1)[0].id);
   }
 }
 
 export function prepareRound(state) {
   ensureJokerState(state);
+  const random=runRandomFn(state);
   state.status="playing";
   state.roundSettled=false;
   state.roundHandsPlayed=0;
   state.roundDiscardsUsed=0;
   state.roundHandCounts={};
-  state.targetHand=randomChoice(["pair","two-pair","three-kind","straight","flush"]);
-  state.targetRank=randomChoice(RANKS);
-  state.targetSuit=randomChoice(SUITS);
-  state.idolRank=randomChoice(RANKS);
-  state.idolSuit=randomChoice(SUITS);
-  state.ancientSuit=randomChoice(SUITS);
-  state.castleSuit=randomChoice(SUITS);
+  state.targetHand=randomChoice(["pair","two-pair","three-kind","straight","flush"],random);
+  state.targetRank=randomChoice(RANKS,random);
+  state.targetSuit=randomChoice(SUITS,random);
+  state.idolRank=randomChoice(RANKS,random);
+  state.idolSuit=randomChoice(SUITS,random);
+  state.ancientSuit=randomChoice(SUITS,random);
+  state.castleSuit=randomChoice(SUITS,random);
 
   state.handSize=state.baseHandSize ?? 8;
   state.handsRemaining=state.baseHands ?? 4;
@@ -149,27 +154,27 @@ export function prepareRound(state) {
 
   // Blind-select-like effects supported by current prototype.
   if (hasJoker(state,"marble-joker")) {
-    const card=randomPlayingCard();
+    const card=randomPlayingCard(random);
     card.enhancement="stone"; card.chips=50;
     state.drawPile.push(card); state.cardsAdded += 1;
     onCardAdded(state);
   }
   if (hasJoker(state,"certificate")) {
-    const card=randomPlayingCard();
-    card.seal=randomChoice(["blood","astral","merchant","occult"]);
+    const card=randomPlayingCard(random);
+    card.seal=randomChoice(["blood","astral","merchant","occult"],random);
     state.hand.push(card); state.cardsAdded += 1;
     onCardAdded(state);
   }
-  if (hasJoker(state,"cartomancer")) grantRandomConsumable(state, "arcanes");
+  if (hasJoker(state,"cartomancer")) grantRandomConsumable(state, "arcanes", random);
   if (hasJoker(state,"madness") && state.jokers.length>1) {
     const js=getState(state,"madness"); js.xmult=(js.xmult ?? 1)+0.5;
     const candidates=state.jokers.filter(id=>id!=="madness");
-    if (candidates.length) removeJoker(state,randomChoice(candidates));
+    if (candidates.length) removeJoker(state,randomChoice(candidates,random));
   }
   if (hasJoker(state,"riff-raff")) {
     const commons=JOKERS.filter(j=>j.rarity==="common" && j.status==="live" && !state.jokers.includes(j.id));
     for (let n=0;n<2 && state.jokers.length<MAX_JOKERS && commons.length;n++) {
-      const i=Math.floor(Math.random()*commons.length); equipJoker(state,commons.splice(i,1)[0].id);
+      const i=Math.floor(random()*commons.length); equipJoker(state,commons.splice(i,1)[0].id);
     }
   }
 
@@ -192,7 +197,7 @@ function handLevelBonus(state,key) {
 
 export function scoreWithJokers({ state, cards, baseResult, preview=false }) {
   ensureJokerState(state);
-  const rng=preview ? (()=>0.499999) : Math.random;
+  const rng=preview ? (()=>0.499999) : runRandomFn(state);
   const scoringIds=new Set(baseResult.scoringCardIds);
   const scoringCards=cards.filter(c=>scoringIds.has(c.id));
   const held=state.hand;
@@ -500,7 +505,7 @@ export function onDiscard({state,cards}) {
     while(js.discarded>=23){ js.discarded-=23; js.xmult=(js.xmult||1)+1; }
   }
   for (const card of cards) {
-    if (card.seal === "occult" && Math.random() < 0.35) {
+    if (card.seal === "occult" && runRandom(state) < 0.35) {
       grantRandomConsumable(state,"presages");
     }
   }
