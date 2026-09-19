@@ -4,7 +4,7 @@
 
 Le principe : construire les meilleures combinaisons possibles, exploiter ses **Atouts**, faire grimper son score et accumuler des **pièces d'or** au fil des parties.
 
-> Projet en développement actif.
+> Projet en développement actif — version stable actuelle : **v0.5.3**.
 
 ---
 
@@ -115,4 +115,4 @@ Ce projet n'est ni affilié ni officiellement approuvé par Paizo Inc. ou Foundr
 
 ## 📜 Changelog
 
-L'historique détaillé des modifications est disponible dans [CHANGELOG.md](./CHANGELOG.md) lorsque celui-ci est présent dans la branche publiée.
+L'historique détaillé des modifications est disponible dans [CHANGELOG.md](./CHANGELOG.md).
