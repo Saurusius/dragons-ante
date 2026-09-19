@@ -107,6 +107,15 @@ export function addConsumable(state, id) {
   return true;
 }
 
+export function grantRandomConsumable(state, category, random = Math.random) {
+  ensureDeckState(state);
+  const pool = CONSUMABLES[category];
+  if (!Array.isArray(pool) || !pool.length || !canStoreConsumable(state)) return null;
+  const def = pool[Math.floor(random() * pool.length)];
+  if (!def || !addConsumable(state, def.id)) return null;
+  return def.id;
+}
+
 export function removeConsumable(state, category, index) {
   ensureDeckState(state);
   if (!state.inventory[category]) return null;
