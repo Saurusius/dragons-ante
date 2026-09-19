@@ -80,8 +80,11 @@ import {
 } from "./engines/deck-engine.js";
 
 import { ASSETS, MODULE_ID, MODULE_VERSION, jokerArtUrl } from "./core/assets.js";
+import { seedLabel } from "./core/random.js";
+import { createSaveBundle, readSaveBundle } from "./persistence/save-store.js";
 
 const SAVE_KEY = "roundState";
+const SAVE_BUNDLE_KEY = "saveBundle";
 const LAUNCHER_POS_KEY = "launcherPosition";
 const SOUND_KEY = "soundEnabled";
 const VOLUME_KEY = "soundVolume";
@@ -118,7 +121,15 @@ audio.addEventListener("error", () => {
 
 Hooks.once("init", () => {
   game.settings.register(MODULE_ID, SAVE_KEY, {
-    name: "Dragon's Ante — Sauvegarde",
+    name: "Dragon's Ante — Sauvegarde (legacy)",
+    scope: "user",
+    config: false,
+    type: Object,
+    default: {}
+  });
+
+  game.settings.register(MODULE_ID, SAVE_BUNDLE_KEY, {
+    name: "Dragon's Ante — Sauvegarde atomique",
     scope: "user",
     config: false,
     type: Object,
@@ -176,12 +187,19 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", async () => {
-  state = sanitizeState(game.settings.get(MODULE_ID, SAVE_KEY));
+  const legacyState = game.settings.get(MODULE_ID, SAVE_KEY);
+  const legacyProfile = game.settings.get(MODULE_ID, PROFILE_KEY);
+  const bundle = readSaveBundle(game.settings.get(MODULE_ID, SAVE_BUNDLE_KEY), {
+    fallbackState: legacyState,
+    fallbackProfile: legacyProfile
+  });
+
+  state = sanitizeState(bundle.state);
   soundEnabled = game.settings.get(MODULE_ID, SOUND_KEY);
   soundVolume = Number(game.settings.get(MODULE_ID, VOLUME_KEY) ?? 0.35);
   animationMode = game.settings.get(MODULE_ID, ANIMATION_KEY) || "normal";
   audio.volume = clamp(soundVolume, 0, 1);
-  profile = ensureProfile(game.settings.get(MODULE_ID, PROFILE_KEY));
+  profile = ensureProfile(bundle.profile);
   juice = createJuiceController({
     moduleId: MODULE_ID,
     getSoundEnabled: () => soundEnabled,
@@ -557,7 +575,7 @@ function migrateStableState(current) {
   }
 
   if (current.run) {
-    current.run.schemaVersion = 2;
+    current.run.schemaVersion = 3;
     current.run.maxAnte ??= MAX_ANTE;
     current.run.history ??= [];
   }
@@ -575,23 +593,24 @@ async function startNewRun(save = true) {
   if (save) await saveState();
 }
 
+async function saveBundle() {
+  if (!profile) return;
+  try {
+    await game.settings.set(MODULE_ID, SAVE_BUNDLE_KEY, createSaveBundle(state, profile));
+  } catch (error) {
+    console.error("Dragon's Ante | Échec de sauvegarde atomique", error);
+    pushNotice("La partie continue, mais la sauvegarde n’a pas pu être enregistrée.", "warn");
+  }
+}
+
 async function saveState() {
   if (!state) return;
-  try {
-    await game.settings.set(MODULE_ID, SAVE_KEY, state);
-  } catch (error) {
-    console.error("Dragon's Ante | Échec de sauvegarde", error);
-    pushNotice("La run fonctionne, mais la sauvegarde n’a pas pu être enregistrée.", "warn");
-  }
+  await saveBundle();
 }
 
 async function saveProfile() {
   if (!profile) return;
-  try {
-    await game.settings.set(MODULE_ID, PROFILE_KEY, profile);
-  } catch (error) {
-    console.error("Dragon's Ante | Échec de sauvegarde des Chroniques", error);
-  }
+  await saveBundle();
 }
 
 async function commitProfile(unlocks = []) {
