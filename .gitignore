@@ -1,0 +1,15 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node / tooling
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Local build artifacts
+dist/
+build/
+*.zip
