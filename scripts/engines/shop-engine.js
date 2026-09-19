@@ -23,6 +23,8 @@ import {
   canSpend
 } from "./economy-engine.js";
 
+import { runRandomFn } from "../core/random.js";
+
 export { jokerPrice, sellValue, spendingFloor, canSpend };
 
 const RARITY_WEIGHTS = [
@@ -105,11 +107,12 @@ export function ensureShop(state, force = false) {
   const session = `${state.run?.ante || 1}-${state.run?.blindIndex || 0}`;
 
   if (force || !state.run?.shop || state.run.shop.session !== session) {
+    const random = runRandomFn(state);
     state.run.shop = {
       session,
-      offers: generateOffers(state),
-      consumableOffer: generateConsumableOffer(),
-      boosterOffer: generateBoosterOffer(),
+      offers: generateOffers(state, 3, random),
+      consumableOffer: generateConsumableOffer(random),
+      boosterOffer: generateBoosterOffer(random),
       rerollCost: 1,
       freeRerolls: hasAtout(state, "chaos-the-clown") ? 1 : 0,
       rerolls: 0,
@@ -166,7 +169,7 @@ export function buyBoosterOffer(state) {
   shop.purchases += 1;
   shop.pendingBooster = {
     name: offer.name,
-    choices: generateBoosterChoices()
+    choices: generateBoosterChoices(state, runRandomFn(state))
   };
   return { ok: true, price: offer.price, pending: shop.pendingBooster };
 }
@@ -204,9 +207,10 @@ export function rerollShop(state) {
     js.mult = (js.mult || 0) + 2;
   }
 
-  shop.offers = generateOffers(state);
-  shop.consumableOffer = generateConsumableOffer();
-  shop.boosterOffer = generateBoosterOffer();
+  const random = runRandomFn(state);
+  shop.offers = generateOffers(state, 3, random);
+  shop.consumableOffer = generateConsumableOffer(random);
+  shop.boosterOffer = generateBoosterOffer(random);
 
   return { ok: true, cost };
 }
