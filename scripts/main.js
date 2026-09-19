@@ -95,6 +95,7 @@ const HOME_LOGO = ASSETS.images.branding.title;
 const COIN_ICON = ASSETS.images.ui.coin;
 
 let state = null;
+let currentView = "home";
 let catalogOpen = false;
 let catalogQuery = "";
 let catalogRarity = "all";
@@ -194,6 +195,7 @@ Hooks.once("ready", async () => {
     const migrated = migrateStableState(state);
     applyProfileToRun(profile, state);
     for (const id of state.jokers || []) { if (!profile.collection.jokers.includes(id)) profile.collection.jokers.push(id); }
+    if (state.run?.phase === "shop" && state.run.shop?.pendingBooster) overlay = { type: "booster" };
 
     if (state.status !== "playing" && state.run.phase === "blind" && !state.run.roundResolved) {
       settleRound(state);
@@ -290,6 +292,7 @@ async function requestNewRun(force = false) {
     return;
   }
   await startNewRun(true);
+  currentView = "game";
   catalogOpen = false;
   overlay = null;
   openGame();
@@ -305,15 +308,15 @@ async function handleClick(event) {
   try {
     if (action === "close") return closeGame();
     if (action === "toggle-sound") return toggleSound();
-    if (action === "home") { catalogOpen = false; overlay = null; return renderHome(); }
-    if (action === "catalog") { catalogOpen = true; return renderGame(); }
+    if (action === "home") { currentView = "home"; catalogOpen = false; overlay = null; return render(); }
+    if (action === "catalog") { currentView = "game"; catalogOpen = true; return render(); }
     if (action === "chronicles") { overlay = { type: "chronicles" }; return render(); }
     if (action === "close-catalog") { catalogOpen = false; return renderGame(); }
     if (action === "close-overlay") { overlay = null; return render(); }
     if (action === "confirm-new-run") return confirmNewRun();
     if (action === "cancel-new-run") { overlay = null; return render(); }
     if (action === "new-run") return requestNewRun(false);
-    if (action === "continue") return renderGame();
+    if (action === "continue") { currentView = "game"; return render(); }
 
     if (action === "toggle-card") {
       if (state.run?.phase !== "blind" || state.status !== "playing") return;
@@ -528,7 +531,6 @@ function migrateStableState(current) {
   current.globalSellBonus = Math.max(0, Number(current.globalSellBonus || 0));
   current.handLevels ??= {};
   current.runHandCounts ??= {};
-  current.consumables ??= { tarot: 0, spectral: 0, planet: 0 };
   current.inventory ??= { arcanes: [], constellations: [], presages: [] };
   current.inventory.arcanes ??= [];
   current.inventory.constellations ??= [];
@@ -634,7 +636,8 @@ function syncMusic(force = false) {
 }
 
 function render() {
-  state ? renderGame() : renderHome();
+  if (!state || currentView === "home") renderHome();
+  else renderGame();
   syncMusic();
 }
 
