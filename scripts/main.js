@@ -1047,7 +1047,7 @@ function renderOverlay() {
               ${effect ? `<span class="da-booster-choice-effect">${escapeHtml(effect)}</span>` : ""}
             </button>`;
           }).join("")}</div>
-          <div class="da-modal-actions"><button class="da-button da-button-quiet" data-action="close-overlay">Fermer</button></div>
+          <div class="da-modal-lock">Choisissez une récompense pour terminer l’ouverture du booster.</div>
         </section>
       </div>
     `;
