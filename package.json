@@ -1,0 +1,8 @@
+{
+  "name": "dragons-ante",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/stabilization.mjs"
+  }
+}
