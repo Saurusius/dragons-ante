@@ -1,4 +1,4 @@
-# Dragon's Ante — Structure v0.5.5
+# Dragon's Ante — Structure v0.6.0
 
 ```text
 dragons-ante/
@@ -6,10 +6,13 @@ dragons-ante/
 ├─ scripts/
 │  ├─ main.js                 # orchestration / rendu principal
 │  ├─ core/
-│  │  └─ assets.js            # registre central des chemins médias
+│  │  ├─ assets.js            # registre central des chemins médias
+│  │  └─ random.js            # RNG seedé et reproductible par run
 │  ├─ engines/                # règles, état de jeu et économie
 │  ├─ data/                   # définitions JS des contenus
-│  ├─ ui/                     # launcher et futurs contrôleurs UI
+│  ├─ persistence/
+│  │  └─ save-store.js        # bundle atomique run + Chroniques
+│  ├─ ui/                     # launcher et contrôleurs UI
 │  └─ fx/                     # son, animation et juice runtime
 ├─ styles/
 │  ├─ dragons-ante.css        # interface principale
