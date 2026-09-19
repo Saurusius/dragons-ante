@@ -1,5 +1,6 @@
 import { createDeck, shuffle, drawToHand } from "./poker-engine.js";
 import { ensureJokerState, prepareRound } from "./joker-engine.js";
+import { createRunSeed, ensureRunRandomState, runRandom, runRandomFn } from "../core/random.js";
 
 export const MAX_ANTE = 8;
 
@@ -93,8 +94,29 @@ export function anteBaseTarget(ante) {
   return roundedTarget(300 * Math.pow(1.65, Math.max(0, ante - 1)));
 }
 
-export function bossForAnte(ante) {
-  return BOSSES[(Math.max(1, ante) - 1) % BOSSES.length];
+function ensureBossOrder(state) {
+  ensureRunRandomState(state);
+  const valid = Array.isArray(state.run.bossOrder)
+    && state.run.bossOrder.length === BOSSES.length
+    && state.run.bossOrder.every(id => BOSSES.some(boss => boss.id === id));
+
+  if (valid) return state.run.bossOrder;
+
+  const order = BOSSES.map(boss => boss.id);
+  const random = runRandomFn(state);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  state.run.bossOrder = order;
+  return order;
+}
+
+export function bossForAnte(ante, state = null) {
+  if (!state) return BOSSES[(Math.max(1, ante) - 1) % BOSSES.length];
+  const order = ensureBossOrder(state);
+  const id = order[(Math.max(1, ante) - 1) % order.length];
+  return BOSSES.find(boss => boss.id === id) || BOSSES[0];
 }
 
 export function ensureRunState(state) {
@@ -122,6 +144,8 @@ export function ensureRunState(state) {
   }
 
   state.run.maxAnte ??= MAX_ANTE;
+  ensureRunRandomState(state);
+  ensureBossOrder(state);
   state.run.ante = Math.max(1, Number(state.run.ante || 1));
   state.run.blindIndex = Math.max(0, Math.min(2, Number(state.run.blindIndex || 0)));
   state.run.phase ??= "blind";
@@ -134,11 +158,13 @@ export function ensureRunState(state) {
   return state.run;
 }
 
-export function initializeFreshRun(state) {
-  ensureJokerState(state);
-
+export function initializeFreshRun(state, { seed = createRunSeed() } = {}) {
   state.run = {
-    version: 1,
+    version: 2,
+    schemaVersion: 3,
+    seed: String(seed),
+    rngCounter: 0,
+    bossOrder: null,
     ante: 1,
     maxAnte: MAX_ANTE,
     blindIndex: 0,
@@ -152,6 +178,9 @@ export function initializeFreshRun(state) {
     history: [],
     startedAt: Date.now()
   };
+
+  ensureRunRandomState(state);
+  ensureJokerState(state);
 
   state.money = 4;
   state.jokers = [];
@@ -196,7 +225,7 @@ export function getBlind(state, index = null) {
     };
   }
 
-  const boss = bossForAnte(state.run.ante);
+  const boss = bossForAnte(state.run.ante, state);
   const disabled = Boolean(state.run.bossDisabled || state.jokers?.includes("chicot"));
 
   return {
@@ -222,7 +251,7 @@ export function startCurrentBlind(state) {
   ensureRunState(state);
   const blind = getBlind(state);
 
-  const deck = shuffle(fullDeck(state).map(card => ({ ...card })));
+  const deck = shuffle(fullDeck(state).map(card => ({ ...card })), runRandomFn(state));
 
   state.status = "playing";
   state.target = blind.target;
