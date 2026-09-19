@@ -1,5 +1,6 @@
 
 import { HANDS, RANKS, SUITS, clonePlayingCard, randomPlayingCard, sortHand } from "./poker-engine.js";
+import { runRandomFn } from "../core/random.js";
 
 export const INVENTORY_LIMIT = 6;
 
@@ -107,11 +108,12 @@ export function addConsumable(state, id) {
   return true;
 }
 
-export function grantRandomConsumable(state, category, random = Math.random) {
+export function grantRandomConsumable(state, category, random = null) {
   ensureDeckState(state);
+  const rng = random || runRandomFn(state);
   const pool = CONSUMABLES[category];
   if (!Array.isArray(pool) || !pool.length || !canStoreConsumable(state)) return null;
-  const def = pool[Math.floor(random() * pool.length)];
+  const def = pool[Math.floor(rng() * pool.length)];
   if (!def || !addConsumable(state, def.id)) return null;
   return def.id;
 }
@@ -207,11 +209,12 @@ export function boosterTemplates() {
   ];
 }
 
-export function generateBoosterChoices(random = Math.random) {
+export function generateBoosterChoices(state, random = null) {
+  const rng = random || runRandomFn(state);
   const pool = boosterTemplates().map(entry => ({ ...entry }));
   const picks = [];
   while (picks.length < 3 && pool.length) {
-    const index = Math.floor(random() * pool.length);
+    const index = Math.floor(rng() * pool.length);
     picks.push(pool.splice(index, 1)[0]);
   }
   return picks;
@@ -279,8 +282,9 @@ export function useConsumable(state, category, index, payload = {}) {
       consume();
       return { ok: true, message: `La carte ${card.rankLabel}${card.suitSymbol} est détruite.` };
     case "transmutation-errante": {
-      const newRank = randomRank();
-      const newSuit = randomSuit();
+      const random = runRandomFn(state);
+      const newRank = randomRank(random);
+      const newSuit = randomSuit(random);
       patchCardAfterTransform(card, newRank, newSuit);
       if (found.zone === "hand") sortHand(state.hand);
       consume();
