@@ -3996,3 +3996,217 @@
   .da-hand-row .da-card,
   .da-action-button { transition: none; }
 }
+
+
+/* ============================================================
+   Dragon's Ante 0.6.1 — Typography & text-flow hotfix
+   Issue #5
+   ============================================================ */
+
+.da-shell {
+  --da-font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --da-font-display: Georgia, "Times New Roman", serif;
+  font-family: var(--da-font-ui);
+}
+
+/* Foundry applies its own button/input typography and line metrics.
+   Reset controls to the module UI stack so text stays consistent. */
+.da-shell button,
+.da-shell input,
+.da-shell select,
+.da-shell textarea,
+.da-shell label {
+  font-family: var(--da-font-ui);
+}
+
+.da-shell button {
+  line-height: 1.2;
+}
+
+.da-shell p,
+.da-shell span,
+.da-shell small,
+.da-shell strong,
+.da-shell em,
+.da-shell b {
+  overflow-wrap: anywhere;
+}
+
+/* Display serif is intentional only for decorative / editorial headings. */
+.da-home-copy h1,
+.da-home-copy h2,
+.da-modal-card > h3,
+.da-chronicles-header h2,
+.da-chronicles-section-title h3 {
+  font-family: var(--da-font-display);
+}
+
+/* Everything actionable / informational stays in the same UI face. */
+.da-button,
+.da-action-button,
+.da-side-button,
+.da-shop-side-reroll,
+.da-shop-side-continue,
+.da-shop-offer,
+.da-shop-suboffer,
+.da-shop-owned,
+.da-catalog-joker,
+.da-active-joker-row,
+.da-achievement,
+.da-run-history-row,
+.da-consumable-chip,
+.da-target-card,
+.da-booster-choice,
+.da-modal-lock,
+.da-notice,
+.da-score-console,
+.da-joker-slot {
+  font-family: var(--da-font-ui);
+}
+
+/* Booster rewards must never inherit Foundry's fixed button height. */
+.da-booster-choices {
+  display: grid;
+  gap: 10px;
+}
+
+.da-booster-choice {
+  width: 100%;
+  height: auto;
+  min-height: 68px;
+  max-height: none;
+  margin: 0;
+  padding: 11px 13px 12px;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-items: start;
+  gap: 7px;
+  overflow: visible;
+  white-space: normal;
+  text-align: left;
+  border: 1px solid rgba(224,179,91,.24);
+  border-radius: 10px;
+  background: linear-gradient(180deg,rgba(255,255,255,.025),transparent),#2a211c;
+  color: #f0e2c6;
+  box-shadow: none;
+}
+
+.da-booster-choice-header {
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.da-booster-choice-header strong {
+  min-width: 0;
+  display: block;
+  margin: 0;
+  color: #f2e4c9;
+  font-family: var(--da-font-ui);
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.da-booster-choice-header small {
+  align-self: start;
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 3px 6px;
+  border: 1px solid rgba(224,179,91,.18);
+  border-radius: 999px;
+  background: rgba(224,179,91,.07);
+  color: #d5b567;
+  font-family: var(--da-font-ui);
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.da-booster-choice-effect {
+  min-width: 0;
+  display: block;
+  margin: 0;
+  color: #b9ab98;
+  font-family: var(--da-font-ui);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.da-booster-choice:hover,
+.da-booster-choice:focus-visible {
+  background: linear-gradient(180deg,rgba(255,255,255,.04),transparent),#352923;
+  border-color: rgba(224,179,91,.44);
+}
+
+.da-booster-modal {
+  width: min(620px, 94vw);
+}
+
+.da-booster-modal > p {
+  margin-bottom: 16px;
+}
+
+.da-modal-lock {
+  margin-top: 13px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(224,179,91,.12);
+  color: #d8ccb7;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Prevent generic Foundry button rules from compressing long-action controls. */
+.da-target-card,
+.da-consumable-chip,
+.da-shop-side-reroll,
+.da-shop-side-continue,
+.da-sell-button,
+.da-action-button {
+  height: auto;
+  white-space: normal;
+}
+
+/* Consistent readable line-height across dense information screens. */
+.da-shop-offer p,
+.da-shop-suboffer p,
+.da-shop-owned-copy small,
+.da-catalog-joker p,
+.da-achievement p,
+.da-run-history-row small,
+.da-modal-card p,
+.da-notice {
+  line-height: 1.45;
+}
+
+@media (max-width: 620px) {
+  .da-booster-modal {
+    width: min(96vw, 620px);
+    padding: 18px;
+  }
+
+  .da-booster-choice {
+    min-height: 76px;
+    padding: 10px 11px 11px;
+  }
+
+  .da-booster-choice-header {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .da-booster-choice-header small {
+    justify-self: start;
+  }
+}
