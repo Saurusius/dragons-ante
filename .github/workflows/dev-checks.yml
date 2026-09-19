@@ -75,6 +75,10 @@ jobs:
             node --check "$file"
           done < <(find scripts -type f -name '*.js' -print0)
 
+      - name: Run stabilization tests
+        shell: bash
+        run: npm test
+
       - name: Verify required release files
         shell: bash
         run: |
