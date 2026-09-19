@@ -4,18 +4,20 @@
 
 Le principe : construire les meilleures combinaisons possibles, exploiter ses **Atouts**, faire grimper son score et accumuler des **pièces d'or** au fil des parties.
 
-> Projet en développement actif — version de stabilisation en cours : **v0.5.5**.
+> Projet en développement actif — version de développement actuelle : **v0.6.0**.
 
 ---
 
 ## ✨ Fonctionnalités
 
-- Interface de jeu plein écran intégrée à Foundry VTT
+- Interface de jeu plein écran repensée autour d’un cockpit de score très lisible
 - Système de mains, combinaisons et multiplicateurs de score
 - **Atouts** aux effets variés et aux raretés distinctes
 - Atouts inspirés de personnages, créatures et archétypes de Pathfinder
 - Économie en **pièces d'or**
 - Chroniques du Dragon et suivi persistant des performances
+- Sauvegarde atomique de la run et des Chroniques
+- Raccourcis clavier en jeu : 1–8, Entrée, D et Échap
 - Effets visuels, animations et confettis
 - Ambiance sonore et effets audio
 - Interface pensée pour être jouée directement depuis une partie Foundry
