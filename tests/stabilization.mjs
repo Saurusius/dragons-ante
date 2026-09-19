@@ -290,6 +290,14 @@ function testAtomicSaveBundle() {
   assert.equal(legacy.state.score, 7);
 }
 
+function testTypographyAndBoosterLayout() {
+  const css = read("styles/dragons-ante.css");
+  assert.match(css, /\.da-shell button,[\s\S]*font-family:\s*var\(--da-font-ui\)/, "Les contrôles doivent utiliser la police UI du module.");
+  assert.match(css, /\.da-booster-choice\s*\{[\s\S]*?height:\s*auto;[\s\S]*?white-space:\s*normal;/, "Les choix de booster doivent garder une hauteur naturelle et autoriser le retour à la ligne.");
+  assert.match(css, /\.da-booster-choice-header\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,1fr\)\s+auto;/, "Le titre et la catégorie du booster doivent disposer de colonnes séparées.");
+  assert.match(css, /\.da-booster-choice-effect\s*\{[\s\S]*?line-height:\s*1\.45;/, "La description du booster doit conserver une hauteur de ligne lisible.");
+}
+
 function testVersionAndLegacyGuards() {
   const manifest = JSON.parse(read("module.json"));
   assert.match(manifest.version, /^\d+\.\d+\.\d+$/);
@@ -321,6 +329,7 @@ testPendingBoosterGuards();
 testDataParityAndLiveCoverage();
 testSeededRunRandomness();
 testAtomicSaveBundle();
+testTypographyAndBoosterLayout();
 testVersionAndLegacyGuards();
 
 console.log("Dragon's Ante — stabilization tests OK");
