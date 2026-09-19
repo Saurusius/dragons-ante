@@ -1534,13 +1534,21 @@
   color: #e16a76;
 }
 
-.da-money-card span,
-.da-shop-money span {
+.da-money-card > span,
+.da-shop-money > span {
   display: block;
   margin-top: 2px;
   color: #857b6d;
   font-size: 9px;
   line-height: 1.35;
+}
+
+.da-shop-money > span {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  white-space: nowrap;
 }
 
 .da-top-blind-progress {
@@ -2101,7 +2109,11 @@
 .da-target-card small { display:block; margin-top:4px; color:#a49682; font-size:9px; font-weight:600; letter-spacing:0; }
 .da-target-card.mini strong { font-size:14px; }
 .da-booster-choices { display:grid; gap:8px; }
-.da-booster-choice { padding:11px 12px; border:1px solid rgba(224,179,91,.18); border-radius:9px; background:#2a211c; color:#f0e2c6; text-align:left; cursor:pointer; }
+.da-booster-choice { padding:11px 12px; border:1px solid rgba(224,179,91,.18); border-radius:9px; background:#2a211c; color:#f0e2c6; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+.da-booster-choice-header { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; }
+.da-booster-choice-header strong { font-size:12px; line-height:1.35; }
+.da-booster-choice-header small { flex:0 0 auto; color:#c5a760; font-size:8px; font-weight:900; letter-spacing:.1em; }
+.da-booster-choice-effect { display:block; color:#b8aa96; font-size:10px; line-height:1.45; }
 .da-booster-choice:hover { background:#352923; }
 .da-shop-suboffers { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; margin-top:14px; }
 .da-shop-suboffer { min-height:170px; padding:15px; border:1px solid rgba(255,255,255,.08); border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,.02), transparent), #241d19; display:flex; flex-direction:column; }
@@ -2454,6 +2466,7 @@
   background: center/contain no-repeat;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,.28));
 }
+.da-shop-money .da-coin-icon { margin-left: 7px; }
 .da-money-card strong,.da-shop-money strong,.da-shop-offer-bottom strong,.da-sell-button strong,.da-shop-footer strong,.da-reward-breakdown b,.da-save-summary strong {
   display: inline-flex;
   align-items: center;
@@ -2909,7 +2922,19 @@
 
 .da-shop-side-continue {
   margin-top: auto;
+  min-height: 120px;
+  height: auto;
   padding: 12px 13px;
+
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  align-content: start;
+  align-items: start;
+  justify-content: stretch;
+  justify-items: stretch;
+  gap: 0;
+
+  white-space: normal;
   background: linear-gradient(145deg,#6d2834,#431921);
   color: #f7e5c5;
   box-shadow: 0 8px 20px rgba(0,0,0,.22);
@@ -2926,18 +2951,21 @@
   margin-top: 3px;
   font: 700 18px/1.05 Georgia,"Times New Roman",serif;
 }
-.da-shop-side-continue > span {
+.da-shop-side-target {
   display: block;
   margin-top: 4px;
   color: #ffd77b;
   font-size: 12px;
   font-weight: 900;
+  overflow-wrap: anywhere;
 }
-.da-shop-side-continue p {
-  margin: 6px 0 0;
+.da-shop-side-description {
+  display: block;
+  margin-top: 6px;
   color: #c4aaa2;
   font-size: 10.5px;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 .da-shop-side-continue.is-boss { border-color: rgba(232,179,76,.65); background: linear-gradient(145deg,#714017,#3e1d0e); }
 .da-shop-side-continue:hover,.da-shop-side-reroll:hover:not(:disabled) { filter: brightness(1.08); }
