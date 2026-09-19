@@ -94,23 +94,59 @@ function rankGroups(cards) {
   return [...groups.entries()].map(([rank, group]) => ({ rank, cards: group })).sort((a, b) => b.rank - a.rank);
 }
 
-function straightFromValues(values, needed, shortcut) {
-  if (values.length < needed) return false;
+function combinations(values, size) {
+  const result = [];
+  const walk = (start, picked) => {
+    if (picked.length === size) {
+      result.push([...picked]);
+      return;
+    }
+    for (let i = start; i <= values.length - (size - picked.length); i++) {
+      picked.push(values[i]);
+      walk(i + 1, picked);
+      picked.pop();
+    }
+  };
+  walk(0, []);
+  return result;
+}
+
+function straightRankSequence(values, needed, shortcut) {
+  if (values.length < needed) return null;
   const sorted = [...new Set(values)].sort((a,b)=>a-b);
   const variants = [sorted];
   if (sorted.includes(14)) variants.push([1, ...sorted.filter(v=>v!==14)]);
-  for (const vals of variants) {
-    for (let start=0; start<=vals.length-needed; start++) {
-      const chunk=vals.slice(start,start+needed);
-      let ok=true;
-      for (let i=1;i<chunk.length;i++) {
-        const gap=chunk[i]-chunk[i-1];
-        if (gap < 1 || gap > (shortcut ? 2 : 1)) { ok=false; break; }
+  const maxGap = shortcut ? 2 : 1;
+
+  for (let size = Math.min(5, sorted.length); size >= needed; size--) {
+    for (const vals of variants) {
+      for (const chunk of combinations(vals, size)) {
+        let ok = true;
+        for (let i = 1; i < chunk.length; i++) {
+          const gap = chunk[i] - chunk[i - 1];
+          if (gap < 1 || gap > maxGap) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) return chunk.map(value => value === 1 ? 14 : value);
       }
-      if (ok) return true;
     }
   }
-  return false;
+  return null;
+}
+
+function findStraightCards(cards, needed, shortcut) {
+  const sequence = straightRankSequence(cards.map(card => card.rankOrder), needed, shortcut);
+  if (!sequence) return [];
+  const remaining = [...cards];
+  const picked = [];
+  for (const rank of sequence) {
+    const index = remaining.findIndex(card => card.rankOrder === rank);
+    if (index < 0) return [];
+    picked.push(remaining.splice(index, 1)[0]);
+  }
+  return picked;
 }
 
 function suitGroup(card, smeared) {
@@ -118,13 +154,30 @@ function suitGroup(card, smeared) {
   return ["hearts","diamonds"].includes(card.suit) ? "red" : "black";
 }
 
-function hasFlush(cards, needed, smeared) {
-  const counts = new Map();
+function suitGroups(cards, smeared) {
+  const groups = new Map();
   for (const card of cards) {
-    const key=suitGroup(card,smeared);
-    counts.set(key,(counts.get(key)||0)+1);
+    const key = suitGroup(card, smeared);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(card);
   }
-  return [...counts.values()].some(v=>v>=needed);
+  return groups;
+}
+
+function findFlushCards(cards, needed, smeared) {
+  return [...suitGroups(cards, smeared).values()]
+    .filter(group => group.length >= needed)
+    .sort((a,b) => b.length - a.length || Math.max(...b.map(c => c.rankOrder)) - Math.max(...a.map(c => c.rankOrder)))[0] || [];
+}
+
+function findStraightFlushCards(cards, needed, shortcut, smeared) {
+  let best = [];
+  for (const group of suitGroups(cards, smeared).values()) {
+    if (group.length < needed) continue;
+    const straight = findStraightCards(group, needed, shortcut);
+    if (straight.length > best.length) best = straight;
+  }
+  return best;
 }
 
 export function evaluateHand(cards, options = {}) {
@@ -135,8 +188,11 @@ export function evaluateHand(cards, options = {}) {
   const needed = options.fourFingers ? 4 : 5;
   const groups = rankGroups(cards);
   const counts = groups.map(g => g.cards.length).sort((a, b) => b - a);
-  const straight = straightFromValues(cards.map(c=>c.rankOrder), needed, Boolean(options.shortcut));
-  const flush = hasFlush(cards, needed, Boolean(options.smeared));
+  const straightCards = findStraightCards(cards, needed, Boolean(options.shortcut));
+  const flushCards = findFlushCards(cards, needed, Boolean(options.smeared));
+  const straightFlushCards = findStraightFlushCards(cards, needed, Boolean(options.shortcut), Boolean(options.smeared));
+  const straight = straightCards.length >= needed;
+  const flush = flushCards.length >= needed;
   const five = counts[0] >= 5;
   const four = counts[0] >= 4;
   const three = counts[0] >= 3;
@@ -146,18 +202,18 @@ export function evaluateHand(cards, options = {}) {
   let key = "high-card";
   let scoringCards = [];
 
-  if (five && flush) {
+  if (five && cards.length === 5 && flushCards.length === 5) {
     key = "flush-five";
     scoringCards = [...cards];
-  } else if (full && flush && cards.length === 5) {
+  } else if (full && cards.length === 5 && flushCards.length === 5) {
     key = "flush-house";
     scoringCards = [...cards];
   } else if (five) {
     key = "five-kind";
     scoringCards = groups.find(g => g.cards.length >= 5).cards.slice(0,5);
-  } else if (straight && flush) {
+  } else if (straightFlushCards.length >= needed) {
     key = "straight-flush";
-    scoringCards = [...cards];
+    scoringCards = straightFlushCards;
   } else if (four) {
     key = "four-kind";
     scoringCards = groups.find(g => g.cards.length >= 4).cards.slice(0,4);
@@ -166,10 +222,10 @@ export function evaluateHand(cards, options = {}) {
     scoringCards = [...cards];
   } else if (flush) {
     key = "flush";
-    scoringCards = [...cards];
+    scoringCards = flushCards;
   } else if (straight) {
     key = "straight";
-    scoringCards = [...cards];
+    scoringCards = straightCards;
   } else if (three) {
     key = "three-kind";
     scoringCards = groups.find(g => g.cards.length >= 3).cards.slice(0,3);
