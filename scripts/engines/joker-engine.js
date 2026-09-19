@@ -24,10 +24,6 @@ export function ensureJokerState(state) {
   state.cardsAdded ??= 0;
   state.cardsDestroyed ??= 0;
   state.discardedCardCount ??= 0;
-  state.blindsSkipped ??= 0;
-  state.planetsUsed ??= 0;
-  state.tarotsUsed ??= 0;
-  state.boostersSkipped ??= 0;
   state.shopRerolls ??= 0;
   state.inventory ??= { arcanes: [], constellations: [], presages: [] };
   state.globalSellBonus ??= 0;
