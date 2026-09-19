@@ -107,6 +107,7 @@ let notices = [];
 let overlay = null;
 let soundEnabled = true;
 let soundVolume = 0.35;
+let volumeSaveTimer = null;
 let animationMode = "normal";
 let launcherController = null;
 let profile = null;
@@ -275,6 +276,7 @@ function openGame() {
     old.classList.add("da-visible");
     document.getElementById(LAUNCHER_ID)?.classList.add("is-active");
     render();
+    requestAnimationFrame(() => old.focus({ preventScroll: true }));
     syncMusic();
     return;
   }
@@ -285,6 +287,7 @@ function openGame() {
   app.setAttribute("role", "dialog");
   app.setAttribute("aria-modal", "true");
   app.setAttribute("aria-label", "Dragon's Ante");
+  app.tabIndex = -1;
 
   document.body.appendChild(app);
   document.getElementById(LAUNCHER_ID)?.classList.add("is-active");
@@ -292,8 +295,10 @@ function openGame() {
   app.addEventListener("click", handleClick);
   app.addEventListener("input", handleInput);
   app.addEventListener("change", handleInput);
+  app.addEventListener("keydown", handleKeydown);
 
   render();
+  requestAnimationFrame(() => app.focus({ preventScroll: true }));
   syncMusic();
 }
 
@@ -302,6 +307,7 @@ function closeGame() {
   document.getElementById(LAUNCHER_ID)?.classList.remove("is-active");
   audio.pause();
   juice?.stopAll();
+  document.getElementById(LAUNCHER_ID)?.focus({ preventScroll: true });
 }
 
 async function requestNewRun(force = false) {
@@ -512,6 +518,83 @@ async function handleClick(event) {
   }
 }
 
+async function handleKeydown(event) {
+  const target = event.target;
+  const isTyping = target instanceof HTMLInputElement
+    || target instanceof HTMLTextAreaElement
+    || target instanceof HTMLSelectElement
+    || target?.isContentEditable;
+
+  if (event.key === "Tab" && overlay) {
+    const scope = document.querySelector(".da-modal-backdrop, .da-chronicles-backdrop");
+    const focusables = scope ? [...scope.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])')] : [];
+    if (focusables.length) {
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    return;
+  }
+
+  if (event.key === "Escape") {
+    event.preventDefault();
+    if (overlay?.type === "booster") {
+      pushNotice("Choisissez d’abord une récompense du booster.", "warn");
+      return;
+    }
+    if (overlay) {
+      overlay = null;
+      render();
+      return;
+    }
+    if (catalogOpen) {
+      catalogOpen = false;
+      renderGame();
+      return;
+    }
+    closeGame();
+    return;
+  }
+
+  if (isTyping || event.ctrlKey || event.metaKey || event.altKey) return;
+  if (!state || currentView !== "game" || state.run?.phase !== "blind" || state.status !== "playing") return;
+
+  if (/^[1-9]$/.test(event.key)) {
+    const index = Number(event.key) - 1;
+    const card = state.hand?.[index];
+    if (!card) return;
+    event.preventDefault();
+    toggleCard(state, card.id);
+    playUiSound("select");
+    renderGame();
+    await juice?.animateCardSelection(card.id, state.selected.includes(card.id));
+    return;
+  }
+
+  if (event.key === "Enter") {
+    const button = document.querySelector('[data-action="play"]:not([disabled])');
+    if (button) {
+      event.preventDefault();
+      button.click();
+    }
+    return;
+  }
+
+  if (event.key.toLowerCase() === "d") {
+    const button = document.querySelector('[data-action="discard"]:not([disabled])');
+    if (button) {
+      event.preventDefault();
+      button.click();
+    }
+  }
+}
+
 function handleInput(event) {
   const target = event.target;
   if (target.matches("[data-volume-slider]")) {
@@ -644,12 +727,18 @@ async function toggleSound() {
   render();
 }
 
-async function setVolume(value) {
+function setVolume(value) {
   soundVolume = clamp(Number.isFinite(value) ? value : 0.35, 0, 1);
   audio.volume = soundVolume;
-  await game.settings.set(MODULE_ID, VOLUME_KEY, soundVolume);
   const label = document.querySelector(".da-volume-value");
   if (label) label.textContent = `${Math.round(soundVolume * 100)}%`;
+
+  clearTimeout(volumeSaveTimer);
+  volumeSaveTimer = setTimeout(() => {
+    game.settings.set(MODULE_ID, VOLUME_KEY, soundVolume).catch(error => {
+      console.error("Dragon's Ante | Échec de sauvegarde du volume", error);
+    });
+  }, 180);
 }
 
 function syncMusic(force = false) {
