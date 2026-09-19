@@ -1,0 +1,87 @@
+name: Dev checks
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate module
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate module.json
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const path = "module.json";
+
+          if (!fs.existsSync(path)) {
+            throw new Error("module.json is missing.");
+          }
+
+          const moduleJson = JSON.parse(fs.readFileSync(path, "utf8"));
+
+          if (moduleJson.id !== "dragons-ante") {
+            throw new Error("Unexpected module id: " + moduleJson.id);
+          }
+
+          if (!/^\d+\.\d+\.\d+$/.test(moduleJson.version ?? "")) {
+            throw new Error("Invalid semantic version: " + moduleJson.version);
+          }
+
+          if (!Array.isArray(moduleJson.esmodules) || moduleJson.esmodules.length === 0) {
+            throw new Error("module.json must declare at least one ES module.");
+          }
+
+          for (const file of moduleJson.esmodules) {
+            if (!fs.existsSync(file)) {
+              throw new Error("Missing ES module declared in module.json: " + file);
+            }
+          }
+
+          for (const file of moduleJson.styles ?? []) {
+            if (!fs.existsSync(file)) {
+              throw new Error("Missing stylesheet declared in module.json: " + file);
+            }
+          }
+
+          console.log("Dragon's Ante " + moduleJson.version + " — manifest OK");
+          NODE
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --check "$file"
+          done < <(find scripts -type f -name '*.js' -print0)
+
+      - name: Verify required release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f README.md
+          test -f CHANGELOG.md
+          test -d scripts
+          test -d styles
+          test -d lang
+          test -d assets
