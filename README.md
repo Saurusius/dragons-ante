@@ -4,7 +4,7 @@
 
 Le principe : construire les meilleures combinaisons possibles, exploiter ses **Atouts**, faire grimper son score et accumuler des **pièces d'or** au fil des parties.
 
-> Projet en développement actif — version stable actuelle : **v0.5.3**.
+> Projet en développement actif — version de stabilisation en cours : **v0.5.5**.
 
 ---
 
@@ -15,7 +15,7 @@ Le principe : construire les meilleures combinaisons possibles, exploiter ses **
 - **Atouts** aux effets variés et aux raretés distinctes
 - Atouts inspirés de personnages, créatures et archétypes de Pathfinder
 - Économie en **pièces d'or**
-- Scoreboard et suivi des performances
+- Chroniques du Dragon et suivi persistant des performances
 - Effets visuels, animations et confettis
 - Ambiance sonore et effets audio
 - Interface pensée pour être jouée directement depuis une partie Foundry
@@ -84,7 +84,7 @@ Les changements sont développés et validés sur `dev`, puis promus vers `maste
 
 Le dépôt utilise GitHub Actions pour automatiser la validation et la publication :
 
-- **Dev checks** : vérifie automatiquement le manifeste et la syntaxe JavaScript sur `dev`.
+- **Dev checks** : vérifie automatiquement le manifeste, la syntaxe JavaScript et les tests de stabilisation sur `dev`.
 - **Promote dev to master** : promeut manuellement une version validée de `dev` vers `master`.
 - **Publish Release** : construit l'archive Foundry et publie la release GitHub à partir de `master`.
 
