@@ -182,6 +182,11 @@ export function initializeFreshRun(state, { seed = createRunSeed() } = {}) {
   ensureJokerState(state);
 
   state.money = 4;
+  state.hand = [];
+  state.drawPile = createDeck();
+  state.played = [];
+  state.discarded = [];
+  state.selected = [];
   state.jokers = [];
   state.jokerState = {};
   state.globalSellBonus = 0;
@@ -194,10 +199,6 @@ export function initializeFreshRun(state, { seed = createRunSeed() } = {}) {
   state.cardsAdded = 0;
   state.cardsDestroyed = 0;
   state.discardedCardCount = 0;
-  state.blindsSkipped = 0;
-  state.planetsUsed = 0;
-  state.tarotsUsed = 0;
-  state.boostersSkipped = 0;
 
   startCurrentBlind(state);
   return state;
