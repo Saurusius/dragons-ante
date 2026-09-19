@@ -250,6 +250,24 @@ function testSeededRunRandomness() {
   const bossesB = Array.from({ length: 8 }, (_, index) => bossForAnte(index + 1, stateB).id);
   assert.deepEqual(bossesA, bossesB, "L'ordre des Boss doit être reproductible avec une même seed.");
   assert.equal(new Set(bossesA).size, 8, "Les huit Boss doivent apparaître une fois avant répétition.");
+  assert.deepEqual(
+    stateA.hand.map(card => card.baseId),
+    stateB.hand.map(card => card.baseId),
+    "Une même seed doit produire la même main d'ouverture."
+  );
+  assert.deepEqual(
+    stateA.drawPile.map(card => card.baseId),
+    stateB.drawPile.map(card => card.baseId),
+    "Une même seed doit conserver le même ordre de pioche."
+  );
+
+  const stateC = createRound({ initialDraw: false });
+  initializeFreshRun(stateC, { seed: "AUTRESEED060" });
+  assert.notDeepEqual(
+    stateA.hand.map(card => card.baseId),
+    stateC.hand.map(card => card.baseId),
+    "Deux seeds différentes doivent pouvoir produire des mains d'ouverture différentes."
+  );
 }
 
 function testAtomicSaveBundle() {
