@@ -1,5 +1,7 @@
 import { JOKERS, JOKER_MAP } from "../data/jokers-data.js";
 import { HANDS, drawToHand, clonePlayingCard, randomPlayingCard, evaluateHand } from "./poker-engine.js";
+import { grantRandomConsumable } from "./deck-engine.js";
+import { sellValue } from "./economy-engine.js";
 
 const MAX_JOKERS = 5;
 const SUITS = ["spades", "hearts", "diamonds", "clubs"];
@@ -11,7 +13,6 @@ export function ensureJokerState(state) {
   state.jokers ??= [];
   state.jokerState ??= {};
   state.money ??= 4;
-  state.consumables ??= { tarot: 0, spectral: 0, planet: 0 };
   state.handLevels ??= {};
   state.runHandCounts ??= {};
   state.runHandsPlayed ??= 0;
@@ -155,11 +156,11 @@ export function prepareRound(state) {
   }
   if (hasJoker(state,"certificate")) {
     const card=randomPlayingCard();
-    card.seal=randomChoice(["red","blue","gold","purple"]);
+    card.seal=randomChoice(["blood","astral","merchant","occult"]);
     state.hand.push(card); state.cardsAdded += 1;
     onCardAdded(state);
   }
-  if (hasJoker(state,"cartomancer")) state.consumables.tarot += 1;
+  if (hasJoker(state,"cartomancer")) grantRandomConsumable(state, "arcanes");
   if (hasJoker(state,"madness") && state.jokers.length>1) {
     const js=getState(state,"madness"); js.xmult=(js.xmult ?? 1)+0.5;
     const candidates=state.jokers.filter(id=>id!=="madness");
