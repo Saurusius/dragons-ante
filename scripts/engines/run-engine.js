@@ -158,7 +158,6 @@ export function initializeFreshRun(state) {
   state.jokerState = {};
   state.globalSellBonus = 0;
   state.shopRerolls = 0;
-  state.consumables = { tarot: 0, spectral: 0, planet: 0 };
   state.handLevels = {};
   state.runHandCounts = {};
   state.runHandsPlayed = 0;
@@ -352,6 +351,7 @@ export function advanceAfterBlind(state) {
 export function leaveShop(state) {
   ensureRunState(state);
   if (state.run.phase !== "shop") return false;
+  if (state.run.shop?.pendingBooster) return false;
 
   state.run.blindIndex = Math.min(2, state.run.blindIndex + 1);
   state.run.shop = null;
