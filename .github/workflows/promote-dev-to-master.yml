@@ -1,0 +1,71 @@
+name: Promote dev to master
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: promote-dev-to-master
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: Fast-forward master from dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate module.json
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const moduleJson = JSON.parse(fs.readFileSync("module.json", "utf8"));
+
+          if (moduleJson.id !== "dragons-ante") {
+            throw new Error("Unexpected module id: " + moduleJson.id);
+          }
+
+          if (!/^\d+\.\d+\.\d+$/.test(moduleJson.version ?? "")) {
+            throw new Error("Invalid semantic version: " + moduleJson.version);
+          }
+
+          console.log("Promoting Dragon's Ante " + moduleJson.version);
+          NODE
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+          done < <(find scripts -type f -name '*.js' -print0)
+
+      - name: Require fast-forward promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin master dev
+
+          if ! git merge-base --is-ancestor origin/master dev; then
+            echo "::error::master has commits that are not in dev. Promotion refused to avoid divergence."
+            exit 1
+          fi
+
+      - name: Promote dev to master
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin dev:master
