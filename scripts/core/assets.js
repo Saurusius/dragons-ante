@@ -1,5 +1,5 @@
 export const MODULE_ID = "dragons-ante";
-export const MODULE_VERSION = "0.5.3";
+export const MODULE_VERSION = globalThis.game?.modules?.get(MODULE_ID)?.version ?? "dev";
 export const ASSET_ROOT = `modules/${MODULE_ID}/assets`;
 
 export function assetUrl(relativePath) {
