@@ -22,6 +22,8 @@ export const RANKS = [
   { id: "A", label: "A", order: 14, chips: 11 }
 ];
 
+export const STATE_SCHEMA_VERSION = 2;
+
 export const HANDS = {
   "high-card":      { name: "Carte haute",     chips: 5,   mult: 1 },
   "pair":           { name: "Paire",           chips: 10,  mult: 2 },
@@ -272,7 +274,7 @@ export function evaluateHand(cards, options = {}) {
 export function createRound({ target = 300, hands = 4, discards = 3, handSize = 8, random = Math.random, initialDraw = true } = {}) {
   const drawPile = shuffle(createDeck(), random);
   const state = {
-    version: "0.5.3",
+    schemaVersion: STATE_SCHEMA_VERSION,
     status: "playing",
     target,
     score: 0,
