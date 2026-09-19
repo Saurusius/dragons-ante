@@ -1,0 +1,151 @@
+﻿number;id;name;rarity;status;relative_path
+1;joker;Le Bouffon de Cuivre;common;live;assets/images/jokers/common/001-joker.webp
+2;greedy-joker;L’Avare aux Diamants;common;live;assets/images/jokers/common/002-greedy-joker.webp
+3;lusty-joker;La Courtisane Écarlate;common;live;assets/images/jokers/common/003-lusty-joker.webp
+4;wrathful-joker;Le Duelliste de Pique;common;live;assets/images/jokers/common/004-wrathful-joker.webp
+5;gluttonous-joker;L’Ogre aux Trèfles;common;live;assets/images/jokers/common/005-gluttonous-joker.webp
+6;jolly-joker;Le Joyeux Compère;common;live;assets/images/jokers/common/006-jolly-joker.webp
+7;zany-joker;Le Fou aux Trois Couronnes;common;live;assets/images/jokers/common/007-zany-joker.webp
+8;mad-joker;Le Bouffon des Deux Paires;common;live;assets/images/jokers/common/008-mad-joker.webp
+9;crazy-joker;Le Prophète de la Suite;common;live;assets/images/jokers/common/009-crazy-joker.webp
+10;droll-joker;Le Saltimbanque des Couleurs;common;live;assets/images/jokers/common/010-droll-joker.webp
+11;sly-joker;Le Filou des Paires;common;live;assets/images/jokers/common/011-sly-joker.webp
+12;wily-joker;Le Renard aux Trois Lames;common;live;assets/images/jokers/common/012-wily-joker.webp
+13;clever-joker;Le Stratège des Deux Maisons;common;live;assets/images/jokers/common/013-clever-joker.webp
+14;devious-joker;Le Serpent de la Suite;common;live;assets/images/jokers/common/014-devious-joker.webp
+15;crafty-joker;L’Artisan des Couleurs;common;live;assets/images/jokers/common/015-crafty-joker.webp
+16;half-joker;Le Demi-Bouffon;common;live;assets/images/jokers/common/016-half-joker.webp
+17;joker-stencil;Le Masque Inachevé;uncommon;live;assets/images/jokers/uncommon/017-joker-stencil.webp
+18;four-fingers;Les Quatre Doigts;uncommon;live;assets/images/jokers/uncommon/018-four-fingers.webp
+19;mime;Le Mime des Cryptes;uncommon;live;assets/images/jokers/uncommon/019-mime.webp
+20;credit-card;La Dette du Marchand;common;live;assets/images/jokers/common/020-credit-card.webp
+21;ceremonial-dagger;La Dague du Sacrifice;uncommon;future;assets/images/jokers/uncommon/021-ceremonial-dagger.webp
+22;banner;L’Étendard du Mercenaire;common;live;assets/images/jokers/common/022-banner.webp
+23;mystic-summit;Le Pic de l’Oracle;common;live;assets/images/jokers/common/023-mystic-summit.webp
+24;marble-joker;La Gargouille de Marbre;uncommon;live;assets/images/jokers/uncommon/024-marble-joker.webp
+25;loyalty-card;Le Serment de Fidélité;uncommon;live;assets/images/jokers/uncommon/025-loyalty-card.webp
+26;eight-ball;L’Orbe du Hasard;common;live;assets/images/jokers/common/026-eight-ball.webp
+27;misprint;Le Grimoire Mal Imprimé;common;live;assets/images/jokers/common/027-misprint.webp
+28;dusk;Le Crépuscule;uncommon;live;assets/images/jokers/uncommon/028-dusk.webp
+29;raised-fist;Le Poing Levé;common;live;assets/images/jokers/common/029-raised-fist.webp
+30;chaos-the-clown;Le Prince du Chaos;common;live;assets/images/jokers/common/030-chaos-the-clown.webp
+31;fibonacci;La Spirale du Sage;uncommon;live;assets/images/jokers/uncommon/031-fibonacci.webp
+32;steel-joker;Le Chevalier d’Acier;uncommon;live;assets/images/jokers/uncommon/032-steel-joker.webp
+33;scary-face;Le Visage de l’Épouvante;common;live;assets/images/jokers/common/033-scary-face.webp
+34;abstract-joker;L’Arcaniste Abstrait;common;live;assets/images/jokers/common/034-abstract-joker.webp
+35;delayed-gratification;Le Trésor Patient;common;live;assets/images/jokers/common/035-delayed-gratification.webp
+36;hack;Le Coupe-Bourse;uncommon;live;assets/images/jokers/uncommon/036-hack.webp
+37;pareidolia;Le Visage dans les Flammes;uncommon;live;assets/images/jokers/uncommon/037-pareidolia.webp
+38;gros-michel;La Truffe du Gobelin;common;live;assets/images/jokers/common/038-gros-michel.webp
+39;even-steven;Pair, le Paladin;common;live;assets/images/jokers/common/039-even-steven.webp
+40;odd-todd;Impair, le Roublard;common;live;assets/images/jokers/common/040-odd-todd.webp
+41;scholar;L’Érudit;common;live;assets/images/jokers/common/041-scholar.webp
+42;business-card;La Carte du Négociant;common;live;assets/images/jokers/common/042-business-card.webp
+43;supernova;La Nova Arcanique;common;live;assets/images/jokers/common/043-supernova.webp
+44;ride-the-bus;La Diligence Maudite;common;live;assets/images/jokers/common/044-ride-the-bus.webp
+45;space-joker;Le Bouffon Astral;uncommon;live;assets/images/jokers/uncommon/045-space-joker.webp
+46;egg;L’Œuf de Dragon;common;live;assets/images/jokers/common/046-egg.webp
+47;burglar;Le Voleur de Grand-Chemin;uncommon;live;assets/images/jokers/uncommon/047-burglar.webp
+48;blackboard;Le Tableau des Ombres;uncommon;live;assets/images/jokers/uncommon/048-blackboard.webp
+49;runner;Le Coureur des Marches;common;live;assets/images/jokers/common/049-runner.webp
+50;ice-cream;La Crème de Givre;common;live;assets/images/jokers/common/050-ice-cream.webp
+51;dna;Le Sang des Ancêtres;rare;live;assets/images/jokers/rare/051-dna.webp
+52;splash;La Marée du Triton;common;live;assets/images/jokers/common/052-splash.webp
+53;blue-joker;Le Bouffon d’Azur;common;live;assets/images/jokers/common/053-blue-joker.webp
+54;sixth-sense;Le Sixième Sens;uncommon;live;assets/images/jokers/uncommon/054-sixth-sense.webp
+55;constellation;La Constellation du Mage;uncommon;future;assets/images/jokers/uncommon/055-constellation.webp
+56;hiker;Le Voyageur des Hautes-Routes;uncommon;live;assets/images/jokers/uncommon/056-hiker.webp
+57;faceless-joker;Le Sans-Visage;common;live;assets/images/jokers/common/057-faceless-joker.webp
+58;green-joker;Le Bouffon d’Émeraude;common;live;assets/images/jokers/common/058-green-joker.webp
+59;superposition;Le Paradoxe de l’Archimage;common;live;assets/images/jokers/common/059-superposition.webp
+60;to-do-list;Le Registre des Quêtes;common;live;assets/images/jokers/common/060-to-do-list.webp
+61;cavendish;La Truffe Royale;common;live;assets/images/jokers/common/061-cavendish.webp
+62;card-sharp;Le Maître des Cartes;uncommon;live;assets/images/jokers/uncommon/062-card-sharp.webp
+63;red-card;Le Sceau Écarlate;common;future;assets/images/jokers/common/063-red-card.webp
+64;madness;La Démence de l’Oracle;uncommon;live;assets/images/jokers/uncommon/064-madness.webp
+65;square-joker;Le Bouffon Carré;common;live;assets/images/jokers/common/065-square-joker.webp
+66;seance;La Veillée des Esprits;uncommon;live;assets/images/jokers/uncommon/066-seance.webp
+67;riff-raff;La Racaille de Taverne;common;live;assets/images/jokers/common/067-riff-raff.webp
+68;vampire;Le Seigneur Vampire;uncommon;live;assets/images/jokers/uncommon/068-vampire.webp
+69;shortcut;Le Sentier Secret;uncommon;live;assets/images/jokers/uncommon/069-shortcut.webp
+70;hologram;Le Mirage Arcanique;uncommon;live;assets/images/jokers/uncommon/070-hologram.webp
+71;vagabond;Le Vagabond des Royaumes;rare;live;assets/images/jokers/rare/071-vagabond.webp
+72;baron;Le Baron des Marches;rare;live;assets/images/jokers/rare/072-baron.webp
+73;cloud-nine;Le Neuvième Nuage;uncommon;live;assets/images/jokers/uncommon/073-cloud-nine.webp
+74;rocket;La Fusée Alchimique;uncommon;live;assets/images/jokers/uncommon/074-rocket.webp
+75;obelisk;L’Obélisque Runique;rare;live;assets/images/jokers/rare/075-obelisk.webp
+76;midas-mask;Le Masque du Roi d’Or;uncommon;live;assets/images/jokers/uncommon/076-midas-mask.webp
+77;luchador;Le Briseur d’Arène;uncommon;live;assets/images/jokers/uncommon/077-luchador.webp
+78;photograph;Le Portrait Enchanté;common;live;assets/images/jokers/common/078-photograph.webp
+79;gift-card;Le Jeton du Marchand;uncommon;live;assets/images/jokers/uncommon/079-gift-card.webp
+80;turtle-bean;La Fève du Druide;uncommon;live;assets/images/jokers/uncommon/080-turtle-bean.webp
+81;erosion;L’Érosion des Âges;uncommon;live;assets/images/jokers/uncommon/081-erosion.webp
+82;reserved-parking;Le Carrosse Réservé;common;live;assets/images/jokers/common/082-reserved-parking.webp
+83;mail-in-rebate;La Prime du Courrier;common;live;assets/images/jokers/common/083-mail-in-rebate.webp
+84;to-the-moon;Jusqu’aux Lunes;uncommon;live;assets/images/jokers/uncommon/084-to-the-moon.webp
+85;hallucination;La Vision Hallucinée;common;future;assets/images/jokers/common/085-hallucination.webp
+86;fortune-teller;La Diseuse de Bonne Aventure;common;future;assets/images/jokers/common/086-fortune-teller.webp
+87;juggler;Le Jongleur;common;live;assets/images/jokers/common/087-juggler.webp
+88;drunkard;Le Poivrot;common;live;assets/images/jokers/common/088-drunkard.webp
+89;stone-joker;Le Golem de Pierre;uncommon;live;assets/images/jokers/uncommon/089-stone-joker.webp
+90;golden-joker;Le Bouffon Doré;common;live;assets/images/jokers/common/090-golden-joker.webp
+91;lucky-cat;Le Chat Porte-Bonheur;uncommon;live;assets/images/jokers/uncommon/091-lucky-cat.webp
+92;baseball-card;La Carte de Guilde;rare;live;assets/images/jokers/rare/092-baseball-card.webp
+93;bull;Le Taureau d’Or;uncommon;live;assets/images/jokers/uncommon/093-bull.webp
+94;diet-cola;L’Élixir Léger;uncommon;future;assets/images/jokers/uncommon/094-diet-cola.webp
+95;trading-card;La Carte de Négoce;uncommon;live;assets/images/jokers/uncommon/095-trading-card.webp
+96;flash-card;La Carte-Éclair;uncommon;live;assets/images/jokers/uncommon/096-flash-card.webp
+97;popcorn;Le Pain du Bivouac;common;live;assets/images/jokers/common/097-popcorn.webp
+98;spare-trousers;Les Braies de Rechange;uncommon;live;assets/images/jokers/uncommon/098-spare-trousers.webp
+99;ancient-joker;L’Ancien des Runes;rare;live;assets/images/jokers/rare/099-ancient-joker.webp
+100;ramen;Le Ragoût du Voyageur;uncommon;live;assets/images/jokers/uncommon/100-ramen.webp
+101;walkie-talkie;Les Pierres-Messagères;common;live;assets/images/jokers/common/101-walkie-talkie.webp
+102;seltzer;L’Élixir Effervescent;uncommon;live;assets/images/jokers/uncommon/102-seltzer.webp
+103;castle;La Forteresse Errante;uncommon;live;assets/images/jokers/uncommon/103-castle.webp
+104;smiley-face;Le Sourire du Bouffon;common;live;assets/images/jokers/common/104-smiley-face.webp
+105;campfire;Le Feu de Camp;rare;live;assets/images/jokers/rare/105-campfire.webp
+106;golden-ticket;Le Sceau Doré;common;live;assets/images/jokers/common/106-golden-ticket.webp
+107;mr-bones;Sire Osselet;uncommon;live;assets/images/jokers/uncommon/107-mr-bones.webp
+108;acrobat;L’Acrobate;uncommon;live;assets/images/jokers/uncommon/108-acrobat.webp
+109;sock-and-buskin;Masque et Brodequin;uncommon;live;assets/images/jokers/uncommon/109-sock-and-buskin.webp
+110;swashbuckler;Le Bretteur;common;live;assets/images/jokers/common/110-swashbuckler.webp
+111;troubadour;Le Troubadour;uncommon;live;assets/images/jokers/uncommon/111-troubadour.webp
+112;certificate;Le Brevet du Maître;uncommon;live;assets/images/jokers/uncommon/112-certificate.webp
+113;smeared-joker;Le Peintre des Blasons;uncommon;live;assets/images/jokers/uncommon/113-smeared-joker.webp
+114;throwback;Le Retour du Vétéran;uncommon;future;assets/images/jokers/uncommon/114-throwback.webp
+115;hanging-chad;Le Sceau Percé;common;live;assets/images/jokers/common/115-hanging-chad.webp
+116;rough-gem;La Gemme Brute;uncommon;live;assets/images/jokers/uncommon/116-rough-gem.webp
+117;bloodstone;La Pierre de Sang;uncommon;live;assets/images/jokers/uncommon/117-bloodstone.webp
+118;arrowhead;La Pointe de Flèche;uncommon;live;assets/images/jokers/uncommon/118-arrowhead.webp
+119;onyx-agate;L’Agate d’Onyx;uncommon;live;assets/images/jokers/uncommon/119-onyx-agate.webp
+120;glass-joker;Le Bouffon de Verre;uncommon;future;assets/images/jokers/uncommon/120-glass-joker.webp
+121;showman;Le Maître de Piste;uncommon;future;assets/images/jokers/uncommon/121-showman.webp
+122;flower-pot;Le Jardin des Quatre Maisons;uncommon;live;assets/images/jokers/uncommon/122-flower-pot.webp
+123;blueprint;Le Plan de l’Artificier;rare;live;assets/images/jokers/rare/123-blueprint.webp
+124;wee-joker;Le Petit Bouffon;rare;live;assets/images/jokers/rare/124-wee-joker.webp
+125;merry-andy;Milo le Joyeux;uncommon;live;assets/images/jokers/uncommon/125-merry-andy.webp
+126;oops-all-sixes;La Malédiction du Six;uncommon;live;assets/images/jokers/uncommon/126-oops-all-sixes.webp
+127;the-idol;L’Idole;uncommon;live;assets/images/jokers/uncommon/127-the-idol.webp
+128;seeing-double;La Double Vue;uncommon;live;assets/images/jokers/uncommon/128-seeing-double.webp
+129;matador;Le Tueur de Minotaure;uncommon;future;assets/images/jokers/uncommon/129-matador.webp
+130;hit-the-road;La Longue Marche;rare;live;assets/images/jokers/rare/130-hit-the-road.webp
+131;the-duo;Le Duo;rare;live;assets/images/jokers/rare/131-the-duo.webp
+132;the-trio;Le Trio;rare;live;assets/images/jokers/rare/132-the-trio.webp
+133;the-family;La Famille;rare;live;assets/images/jokers/rare/133-the-family.webp
+134;the-order;L’Ordre;rare;live;assets/images/jokers/rare/134-the-order.webp
+135;the-tribe;La Tribu;rare;live;assets/images/jokers/rare/135-the-tribe.webp
+136;stuntman;Le Trompe-la-Mort;rare;live;assets/images/jokers/rare/136-stuntman.webp
+137;invisible-joker;Le Bouffon Invisible;rare;future;assets/images/jokers/rare/137-invisible-joker.webp
+138;brainstorm;Le Conseil des Arcanes;rare;live;assets/images/jokers/rare/138-brainstorm.webp
+139;satellite;L’Œil Astral;uncommon;future;assets/images/jokers/uncommon/139-satellite.webp
+140;shoot-the-moon;La Flèche vers la Lune;common;live;assets/images/jokers/common/140-shoot-the-moon.webp
+141;drivers-license;La Licence de Caravanier;rare;live;assets/images/jokers/rare/141-drivers-license.webp
+142;cartomancer;Le Cartomancien;uncommon;live;assets/images/jokers/uncommon/142-cartomancer.webp
+143;astronomer;L’Astronome;uncommon;future;assets/images/jokers/uncommon/143-astronomer.webp
+144;burnt-joker;Le Bouffon Cendré;rare;live;assets/images/jokers/rare/144-burnt-joker.webp
+145;bootstraps;Les Bottes du Parvenu;uncommon;live;assets/images/jokers/uncommon/145-bootstraps.webp
+146;canio;Le Tragédien;legendary;future;assets/images/jokers/unique/146-canio.webp
+147;triboulet;Le Fou du Dragon;legendary;live;assets/images/jokers/unique/147-triboulet.webp
+148;yorick;Le Crâne Rieur;legendary;live;assets/images/jokers/unique/148-yorick.webp
+149;chicot;Le Bouffon Noir;legendary;live;assets/images/jokers/unique/149-chicot.webp
+150;perkeo;L’Inépuisable;legendary;future;assets/images/jokers/unique/150-perkeo.webp

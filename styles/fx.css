@@ -1,0 +1,14 @@
+/*
+ * Dragon's Ante — FX layer
+ *
+ * Dedicated stylesheet for future visual polish: card animations, booster reveals,
+ * Atout triggers, score bursts and screen overlays. Keeping FX here prevents
+ * the main interface stylesheet from becoming coupled to animation assets.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .dragons-ante-app [data-da-fx] {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
