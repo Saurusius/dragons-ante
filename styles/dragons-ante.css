@@ -4064,6 +4064,22 @@
   font-family: var(--da-font-ui);
 }
 
+/* Older component rules used Georgia directly. These are functional text,
+   not decorative headings, so they explicitly return to the UI typeface. */
+.da-subtitle,
+.da-preview-name strong,
+.da-empty-table strong,
+.da-table-result-title strong,
+.da-shop-offer h3,
+.da-shop-suboffer h3,
+.da-shop-section-title strong,
+.da-next-blind-card strong,
+.da-shop-side-continue strong,
+.da-chron-stat strong,
+.da-score-burst strong {
+  font-family: var(--da-font-ui);
+}
+
 /* Booster rewards must never inherit Foundry's fixed button height. */
 .da-booster-choices {
   display: grid;
