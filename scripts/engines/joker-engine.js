@@ -501,10 +501,7 @@ export function onDiscard({state,cards}) {
   }
   for (const card of cards) {
     if (card.seal === "occult" && Math.random() < 0.35) {
-      state.inventory ??= { arcanes: [], constellations: [], presages: [] };
-      if ((state.inventory.arcanes.length + state.inventory.constellations.length + state.inventory.presages.length) < 6) {
-        state.inventory.presages.push("sceau-astral");
-      }
+      grantRandomConsumable(state,"presages");
     }
   }
 
