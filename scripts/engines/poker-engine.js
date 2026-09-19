@@ -22,7 +22,7 @@ export const RANKS = [
   { id: "A", label: "A", order: 14, chips: 11 }
 ];
 
-export const STATE_SCHEMA_VERSION = 2;
+export const STATE_SCHEMA_VERSION = 3;
 
 export const HANDS = {
   "high-card":      { name: "Carte haute",     chips: 5,   mult: 1 },
