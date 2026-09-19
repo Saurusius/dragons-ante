@@ -1,4 +1,4 @@
-# Dragon's Ante — Structure v0.5.3
+# Dragon's Ante — Structure v0.5.5
 
 ```text
 dragons-ante/
@@ -7,7 +7,7 @@ dragons-ante/
 │  ├─ main.js                 # orchestration / rendu principal
 │  ├─ core/
 │  │  └─ assets.js            # registre central des chemins médias
-│  ├─ engines/                # règles et état de jeu
+│  ├─ engines/                # règles, état de jeu et économie
 │  ├─ data/                   # définitions JS des contenus
 │  ├─ ui/                     # launcher et futurs contrôleurs UI
 │  └─ fx/                     # son, animation et juice runtime
@@ -38,6 +38,7 @@ dragons-ante/
 │     ├─ music/
 │     └─ sfx/{cards,score,gameplay,ui}/
 ├─ data/
+├─ tests/                     # tests de non-régression Node
 ├─ lang/
 └─ install-local.ps1
 ```
