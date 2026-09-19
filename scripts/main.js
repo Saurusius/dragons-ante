@@ -725,27 +725,32 @@ function renderBlind() {
   const gameOver = state.status !== "playing";
 
   return `
-    <main class="da-game-layout">
+    <main class="da-game-layout da-game-layout-v060">
       ${blindSidebar(blind, preview)}
 
       <section class="da-playfield">
         <div class="da-playfield-top">
-          <div class="da-slot-title"><span>ANTE ${state.run.ante}/${MAX_ANTE}</span><small>${escapeHtml(blind.name)}</small></div>
+          <div class="da-slot-title">
+            <span>ANTE ${state.run.ante}/${MAX_ANTE}</span>
+            <small>${escapeHtml(blind.name)}</small>
+          </div>
           ${blindProgress()}
-          <div class="da-version-pill">${MODULE_VERSION}</div>
+          <div class="da-seed-pill" title="Cette seed rend les tirages de la run reproductibles">SEED ${escapeHtml(seedLabel(state))}</div>
         </div>
 
-        ${jokerBar()}
-        ${inventoryBar()}
+        <section class="da-rack">
+          ${jokerBar()}
+          ${inventoryBar()}
+        </section>
 
         <section class="da-table-zone">
           ${state.lastResult ? `
-            <div class="da-table-result-title"><small>MAIN JOUÉE</small><strong>${state.lastResult.name}</strong><span>+${formatNumber(state.lastResult.score)} pts</span></div>
+            <div class="da-table-result-title"><small>DERNIÈRE MAIN</small><strong>${state.lastResult.name}</strong><span>+${formatNumber(state.lastResult.score)}</span></div>
             <div class="da-played-cards">${state.lastResult.cards.map(card => playedCardHtml(card)).join("")}</div>
           ` : `
             <div class="da-empty-table">
               <span class="da-watermark">${blind.isBoss ? blind.icon : "♠"}</span>
-              <strong>${blind.isBoss ? escapeHtml(blind.name) : "La table vous attend"}</strong>
+              <strong>${blind.isBoss ? escapeHtml(blind.name) : "Composez votre main"}</strong>
               <small>${escapeHtml(blind.description)}</small>
             </div>
           `}
@@ -754,20 +759,20 @@ function renderBlind() {
         <section class="da-hand-section">
           <div class="da-hand-heading">
             <div><small>VOTRE MAIN</small><strong>${selectedCount}/5 sélectionnée${selectedCount > 1 ? "s" : ""}</strong></div>
-            <div class="da-hand-hint">${blind.isBoss && blind.disabled ? "Capacité du Boss neutralisée" : "Cliquez sur une carte pour la sélectionner"}</div>
+            <div class="da-hand-hint">${blind.isBoss && blind.disabled ? "Boss neutralisé" : "Touches 1–8 pour sélectionner · Entrée pour jouer · D pour défausser"}</div>
           </div>
 
           <div class="da-hand-row">
-            ${state.hand.map(card => cardHtml(card, state.selected.includes(card.id))).join("")}
+            ${state.hand.map((card,index) => cardHtml(card, state.selected.includes(card.id), index)).join("")}
             ${deckHtml()}
           </div>
 
           <div class="da-action-row">
             <button class="da-action-button da-discard-action" data-action="discard" ${gameOver || !selectedCount || state.discardsRemaining <= 0 ? "disabled" : ""}>
-              <span>Défausser</span><small>${state.discardsRemaining} restante${state.discardsRemaining > 1 ? "s" : ""}</small>
+              <span>Défausser</span><small>D · ${state.discardsRemaining} restante${state.discardsRemaining > 1 ? "s" : ""}</small>
             </button>
             <button class="da-action-button da-play-action" data-action="play" ${gameOver || !selectedCount || state.handsRemaining <= 0 ? "disabled" : ""}>
-              <span>Jouer la main</span><small>${preview ? `${preview.name} · ${formatNumber(preview.score)} pts` : "Choisissez vos cartes"}</small>
+              <span>Jouer la main</span><small>Entrée · ${preview ? `${preview.name} · ${formatNumber(preview.score)} pts` : "Choisissez vos cartes"}</small>
             </button>
           </div>
         </section>
@@ -788,8 +793,51 @@ function previewEffectClass(preview) {
 }
 
 function blindSidebar(blind, preview) {
+  const progress = Math.min(100, Math.round((Number(state.score || 0) / Math.max(1, Number(state.target || blind.target || 1))) * 100));
+  const handLevel = preview?.handLevel || 1;
+
   return `
-    <aside class="da-sidebar">
+    <aside class="da-sidebar da-score-console">
+      <section class="da-blind-card ${blind.isBoss ? "is-boss" : ""}">
+        <div class="da-blind-symbol">${blind.icon}</div>
+        <div class="da-blind-copy">
+          <small>${blind.isBoss ? "BOSS" : blind.name.toUpperCase()}</small>
+          <strong>${formatNumber(blind.target)}</strong>
+          <span>${escapeHtml(blind.description)}</span>
+        </div>
+      </section>
+
+      <section class="da-score-card">
+        <div class="da-console-label"><span>SCORE DE LA MISE</span><small>${progress}%</small></div>
+        <strong>${formatNumber(state.score)}</strong>
+        <div class="da-score-target">Objectif · ${formatNumber(blind.target)}</div>
+        <div class="da-score-progress"><i style="width:${progress}%"></i></div>
+      </section>
+
+      <section class="da-hand-preview ${preview ? "has-preview" : ""} ${previewEffectClass(preview)}">
+        <div class="da-preview-name">
+          <small>MAIN SÉLECTIONNÉE</small>
+          <div><strong>${preview ? preview.name : "—"}</strong><span>Niv. ${handLevel}</span></div>
+        </div>
+        <div class="da-preview-math">
+          <span class="da-chip-box">${preview ? preview.chips : 0}</span>
+          <b>×</b>
+          <span class="da-mult-box">${preview ? preview.mult : 0}</span>
+        </div>
+        <div class="da-preview-total">${preview ? `${preview.xMult !== 1 ? `X${preview.xMult} · ` : ""}${formatNumber(preview.score)} points` : "Sélectionnez jusqu’à 5 cartes"}</div>
+      </section>
+
+      <section class="da-resource-grid">
+        <div class="is-hands"><strong>${state.handsRemaining}</strong><span>Mains</span></div>
+        <div class="is-discards"><strong>${state.discardsRemaining}</strong><span>Défausses</span></div>
+      </section>
+
+      <section class="da-money-card">
+        <small>BOURSE</small>
+        <strong class="${state.money < 0 ? "is-debt" : ""}">${coinHtml(state.money)}</strong>
+        <span>${state.money < 0 ? `Crédit jusqu’à ${coinHtml(spendingFloor(state))}` : "Disponible à la prochaine boutique"}</span>
+      </section>
+
       <section class="da-run-card">
         <div><small>ANTE</small><strong>${state.run.ante}</strong><span>/ ${MAX_ANTE}</span></div>
         <div class="da-run-mini-progress">${[0,1,2].map(index => {
@@ -798,27 +846,11 @@ function blindSidebar(blind, preview) {
         }).join("")}</div>
       </section>
 
-      <section class="da-blind-card ${blind.isBoss ? "is-boss" : ""}">
-        <div class="da-blind-symbol">${blind.icon}</div>
-        <div class="da-blind-copy"><small>${blind.isBoss ? "BOSS" : blind.name.toUpperCase()}</small><strong>${formatNumber(blind.target)}</strong><span>${escapeHtml(blind.description)}</span></div>
-      </section>
-
-      <section class="da-score-card">
-        <small>SCORE</small><strong>${formatNumber(state.score)}</strong>
-        <div class="da-score-progress"><i style="width:${Math.min(100, Math.round(state.score / state.target * 100))}%"></i></div>
-      </section>
-
-      <section class="da-hand-preview ${preview ? "has-preview" : ""} ${previewEffectClass(preview)}">
-        <div class="da-preview-name"><small>MAIN</small><strong>${preview ? preview.name : "—"}</strong></div>
-        <div class="da-preview-math"><span class="da-chip-box">${preview ? preview.chips : 0}</span><b>×</b><span class="da-mult-box">${preview ? preview.mult : 0}</span></div>
-        <div class="da-preview-total">${preview ? `${preview.xMult !== 1 ? `X${preview.xMult} · ` : ""}${formatNumber(preview.score)} pts` : "Sélectionnez des cartes"}</div>
-      </section>
-
-      <section class="da-resource-grid"><div><strong>${state.handsRemaining}</strong><span>Mains</span></div><div><strong>${state.discardsRemaining}</strong><span>Défausses</span></div></section>
-      <section class="da-money-card"><small>BOURSE</small><strong class="${state.money < 0 ? "is-debt" : ""}">${coinHtml(state.money)}</strong><span>${state.money < 0 ? `Dette autorisée jusqu’à ${coinHtml(spendingFloor(state))}` : "À dépenser dans la prochaine boutique"}</span></section>
-      <button class="da-side-button da-side-button-jokers" data-action="catalog">Catalogue · ${state.jokers.length}/${MAX_JOKERS}</button>
-      <button class="da-side-button da-side-button-jokers" data-action="chronicles">Chroniques</button>
-      <button class="da-side-button da-side-button-muted" data-action="home">Accueil</button>
+      <nav class="da-side-nav" aria-label="Navigation Dragon's Ante">
+        <button class="da-side-button da-side-button-jokers" data-action="catalog">Catalogue <span>${state.jokers.length}/${MAX_JOKERS}</span></button>
+        <button class="da-side-button da-side-button-jokers" data-action="chronicles">Chroniques</button>
+        <button class="da-side-button da-side-button-muted" data-action="home">Accueil</button>
+      </nav>
     </aside>
   `;
 }
@@ -1215,10 +1247,10 @@ function handName(key) {
   return HANDS[key]?.name || key;
 }
 
-function cardHtml(card, selected) {
+function cardHtml(card, selected, index = null) {
   const red = card.color === "red";
   return `
-    <button type="button" class="da-card ${red ? "is-red" : "is-black"} ${selected ? "is-selected" : ""} ${card.edition ? `edition-${card.edition}` : ""}" data-action="toggle-card" data-card-id="${card.id}" aria-pressed="${selected}" title="${escapeAttr(cardTitle(card))}">
+    <button type="button" class="da-card ${red ? "is-red" : "is-black"} ${selected ? "is-selected" : ""} ${card.edition ? `edition-${card.edition}` : ""}" data-action="toggle-card" data-card-id="${card.id}" aria-pressed="${selected}" aria-label="${index !== null ? `Carte ${index + 1} · ` : ""}${escapeAttr(cardTitle(card))}" title="${escapeAttr(cardTitle(card))}">
       <span class="da-card-corner da-card-corner-top"><strong>${card.rankLabel}</strong><i>${card.suitSymbol}</i></span>
       <span class="da-card-center">${card.suitSymbol}</span>
       ${card.bonusChips ? `<span class="da-card-bonus">+${card.bonusChips}</span>` : ""}
@@ -1285,10 +1317,15 @@ function saveSummary(summary) {
 }
 
 function shell(content) {
+  const shortcuts = state && currentView === "game"
+    ? `<div class="da-shortcut-strip" aria-hidden="true"><span><b>1–8</b> sélectionner</span><span><b>Entrée</b> jouer</span><span><b>D</b> défausser</span><span><b>Échap</b> fermer</span></div>`
+    : "";
+
   return `
     <div class="da-shell">
       <header class="da-topbar">
         <div class="da-brand"><span class="da-brand-mark">♠</span><div><strong>DRAGON'S ANTE</strong><small>Fantasy Poker Roguelike</small></div></div>
+        ${shortcuts}
         <div class="da-topbar-actions"><label class="da-volume-control" title="Régler le volume"><span>${soundEnabled ? "♫" : "🔇"}</span><input type="range" min="0" max="100" step="1" value="${Math.round(soundVolume * 100)}" data-volume-slider><small class="da-volume-value">${Math.round(soundVolume * 100)}%</small></label><button class="da-audio-toggle" data-action="toggle-sound" title="${soundEnabled ? "Couper" : "Activer"} l’audio">${soundEnabled ? "♫" : "🔇"}</button><button class="da-close" data-action="close" title="Fermer Dragon's Ante">×</button></div>
       </header>
       ${content}
