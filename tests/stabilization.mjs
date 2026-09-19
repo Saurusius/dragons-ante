@@ -22,7 +22,8 @@ import {
 
 import {
   initializeFreshRun,
-  leaveShop
+  leaveShop,
+  bossForAnte
 } from "../scripts/engines/run-engine.js";
 
 import {
@@ -37,6 +38,15 @@ import {
 import {
   JOKERS as JS_JOKERS
 } from "../scripts/data/jokers-data.js";
+
+import {
+  runRandom
+} from "../scripts/core/random.js";
+
+import {
+  createSaveBundle,
+  readSaveBundle
+} from "../scripts/persistence/save-store.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = relative => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -104,41 +114,47 @@ function testLegacyConsumableMigration() {
 }
 
 function testEightBallAndTriggerTracking() {
-  const originalRandom = Math.random;
-  try {
-    Math.random = () => 0;
+  const eightState = freshState(["eight-ball"]);
 
-    const eightState = freshState(["eight-ball"]);
-    const eight = card("8", "hearts");
-    const eightResult = scoreWithJokers({
-      state: eightState,
-      cards: [eight],
-      baseResult: evaluateHand([eight])
-    });
-
-    assert.equal(inventoryCount(eightState), 1, "Eight Ball doit pouvoir créer un consommable.");
-    assert.ok(eightResult.usedJokers.includes("eight-ball"), "Eight Ball doit être enregistré comme déclenché lorsqu'il crée une récompense.");
-
-    const idleGreedyState = freshState(["greedy-joker"]);
-    const heart = card("7", "hearts");
-    const idleResult = scoreWithJokers({
-      state: idleGreedyState,
-      cards: [heart],
-      baseResult: evaluateHand([heart])
-    });
-    assert.ok(!idleResult.usedJokers.includes("greedy-joker"), "Un Atout sans effet sur la main ne doit pas être marqué comme déclenché.");
-
-    const activeGreedyState = freshState(["greedy-joker"]);
-    const diamond = card("7", "diamonds");
-    const activeResult = scoreWithJokers({
-      state: activeGreedyState,
-      cards: [diamond],
-      baseResult: evaluateHand([diamond])
-    });
-    assert.ok(activeResult.usedJokers.includes("greedy-joker"), "Un Atout réellement appliqué doit être marqué comme déclenché.");
-  } finally {
-    Math.random = originalRandom;
+  let winningCounter = null;
+  for (let counter = 0; counter < 256; counter++) {
+    const probe = structuredClone(eightState);
+    probe.run.rngCounter = counter;
+    if (runRandom(probe) < 0.25) {
+      winningCounter = counter;
+      break;
+    }
   }
+  assert.notEqual(winningCounter, null, "La seed de test doit contenir un tirage Eight Ball gagnant.");
+  eightState.run.rngCounter = winningCounter;
+
+  const eight = card("8", "hearts");
+  const eightResult = scoreWithJokers({
+    state: eightState,
+    cards: [eight],
+    baseResult: evaluateHand([eight])
+  });
+
+  assert.equal(inventoryCount(eightState), 1, "Eight Ball doit pouvoir créer un consommable.");
+  assert.ok(eightResult.usedJokers.includes("eight-ball"), "Eight Ball doit être enregistré comme déclenché lorsqu'il crée une récompense.");
+
+  const idleGreedyState = freshState(["greedy-joker"]);
+  const heart = card("7", "hearts");
+  const idleResult = scoreWithJokers({
+    state: idleGreedyState,
+    cards: [heart],
+    baseResult: evaluateHand([heart])
+  });
+  assert.ok(!idleResult.usedJokers.includes("greedy-joker"), "Un Atout sans effet sur la main ne doit pas être marqué comme déclenché.");
+
+  const activeGreedyState = freshState(["greedy-joker"]);
+  const diamond = card("7", "diamonds");
+  const activeResult = scoreWithJokers({
+    state: activeGreedyState,
+    cards: [diamond],
+    baseResult: evaluateHand([diamond])
+  });
+  assert.ok(activeResult.usedJokers.includes("greedy-joker"), "Un Atout réellement appliqué doit être marqué comme déclenché.");
 }
 
 function testCertificateSeals() {
@@ -219,6 +235,43 @@ function testDataParityAndLiveCoverage() {
   assert.deepEqual(missing, [], `Atouts marqués live sans implémentation détectable: ${missing.join(", ")}`);
 }
 
+function testSeededRunRandomness() {
+  const first = { run: { seed: "DRAGON060", rngCounter: 0 } };
+  const second = { run: { seed: "DRAGON060", rngCounter: 0 } };
+  const a = Array.from({ length: 12 }, () => runRandom(first));
+  const b = Array.from({ length: 12 }, () => runRandom(second));
+  assert.deepEqual(a, b, "Une même seed doit reproduire exactement la même séquence aléatoire.");
+
+  const stateA = createRound({ initialDraw: false });
+  const stateB = createRound({ initialDraw: false });
+  initializeFreshRun(stateA, { seed: "BOSSORDER060" });
+  initializeFreshRun(stateB, { seed: "BOSSORDER060" });
+  const bossesA = Array.from({ length: 8 }, (_, index) => bossForAnte(index + 1, stateA).id);
+  const bossesB = Array.from({ length: 8 }, (_, index) => bossForAnte(index + 1, stateB).id);
+  assert.deepEqual(bossesA, bossesB, "L'ordre des Boss doit être reproductible avec une même seed.");
+  assert.equal(new Set(bossesA).size, 8, "Les huit Boss doivent apparaître une fois avant répétition.");
+}
+
+function testAtomicSaveBundle() {
+  const state = { score: 123, run: { seed: "SAVE060", rngCounter: 4 } };
+  const profile = { stats: { handsPlayed: 9 } };
+  const bundle = createSaveBundle(state, profile);
+
+  state.score = 999;
+  profile.stats.handsPlayed = 99;
+
+  assert.equal(bundle.state.score, 123, "Le bundle doit capturer un snapshot de la run.");
+  assert.equal(bundle.profile.stats.handsPlayed, 9, "Le bundle doit capturer un snapshot des Chroniques.");
+
+  const restored = readSaveBundle(bundle);
+  assert.equal(restored.state.run.seed, "SAVE060");
+  assert.equal(restored.profile.stats.handsPlayed, 9);
+
+  const legacy = readSaveBundle({}, { fallbackState: { score: 7 }, fallbackProfile: { stats: {} } });
+  assert.equal(legacy.migratedFromLegacy, true);
+  assert.equal(legacy.state.score, 7);
+}
+
 function testVersionAndLegacyGuards() {
   const manifest = JSON.parse(read("module.json"));
   assert.match(manifest.version, /^\d+\.\d+\.\d+$/);
@@ -248,6 +301,8 @@ testCertificateSeals();
 testSwashbucklerUsesRealSellValues();
 testPendingBoosterGuards();
 testDataParityAndLiveCoverage();
+testSeededRunRandomness();
+testAtomicSaveBundle();
 testVersionAndLegacyGuards();
 
 console.log("Dragon's Ante — stabilization tests OK");
