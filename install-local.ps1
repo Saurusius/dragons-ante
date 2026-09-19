@@ -12,9 +12,13 @@ $ModulesDir = Join-Path $FoundryData "Data\modules"
 $Target = Join-Path $ModulesDir $ModuleId
 $LegacyTarget = Join-Path $ModulesDir $LegacyModuleId
 
-if (-not (Test-Path (Join-Path $Source "module.json"))) {
+$ManifestPath = Join-Path $Source "module.json"
+if (-not (Test-Path $ManifestPath)) {
     throw "module.json introuvable dans $Source"
 }
+
+$Manifest = Get-Content -Raw -Path $ManifestPath | ConvertFrom-Json
+$Version = [string]$Manifest.version
 
 New-Item -ItemType Directory -Force -Path $ModulesDir | Out-Null
 
@@ -33,7 +37,7 @@ New-Item -ItemType Directory -Force -Path $Target | Out-Null
 Copy-Item -Path (Join-Path $Source "*") -Destination $Target -Recurse -Force
 
 Write-Host ""
-Write-Host "Dragon's Ante v0.5.3 installe !" -ForegroundColor Green
+Write-Host "Dragon's Ante v$Version installe !" -ForegroundColor Green
 Write-Host "Dossier : $Target"
 Write-Host ""
 Write-Host "Relance Foundry puis active Dragon's Ante dans ton monde." -ForegroundColor Cyan
