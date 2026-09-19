@@ -33,14 +33,65 @@ export const CONSUMABLE_MAP = new Map(
   Object.values(CONSUMABLES).flat().map(item => [item.id, item])
 );
 
-export function ensureDeckState(state) {
+const LEGACY_CONSUMABLE_MAP = {
+  tarot: { category: "arcanes", id: "forge-doree" },
+  spectral: { category: "presages", id: "sceau-astral" },
+  planet: { category: "constellations", id: "atlas-des-mains" }
+};
+
+function ensureInventoryShape(state) {
   state.inventory ??= { arcanes: [], constellations: [], presages: [] };
+  for (const category of Object.keys(CONSUMABLES)) {
+    if (!Array.isArray(state.inventory[category])) state.inventory[category] = [];
+  }
+  return state.inventory;
+}
+
+function rawInventoryCount(state) {
+  return Object.values(state.inventory).reduce((sum, items) => sum + items.length, 0);
+}
+
+export function migrateLegacyConsumables(state) {
+  ensureInventoryShape(state);
+  state.legacyConsumablesPending ??= {};
+
+  if (state.consumables && typeof state.consumables === "object") {
+    for (const key of Object.keys(LEGACY_CONSUMABLE_MAP)) {
+      const amount = Math.max(0, Math.floor(Number(state.consumables[key] || 0)));
+      if (amount) {
+        state.legacyConsumablesPending[key] =
+          Math.max(0, Number(state.legacyConsumablesPending[key] || 0)) + amount;
+      }
+    }
+    delete state.consumables;
+  }
+
+  let migrated = 0;
+  for (const [legacyKey, mapping] of Object.entries(LEGACY_CONSUMABLE_MAP)) {
+    let pending = Math.max(0, Math.floor(Number(state.legacyConsumablesPending[legacyKey] || 0)));
+    while (pending > 0 && rawInventoryCount(state) < INVENTORY_LIMIT) {
+      state.inventory[mapping.category].push(mapping.id);
+      pending -= 1;
+      migrated += 1;
+    }
+    state.legacyConsumablesPending[legacyKey] = pending;
+  }
+
+  if (Object.values(state.legacyConsumablesPending).every(value => Number(value || 0) <= 0)) {
+    delete state.legacyConsumablesPending;
+  }
+  return migrated;
+}
+
+export function ensureDeckState(state) {
+  ensureInventoryShape(state);
+  migrateLegacyConsumables(state);
   return state.inventory;
 }
 
 export function inventoryCount(state) {
   ensureDeckState(state);
-  return Object.values(state.inventory).reduce((sum, items) => sum + items.length, 0);
+  return rawInventoryCount(state);
 }
 
 export function canStoreConsumable(state) {
