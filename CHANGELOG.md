@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.0 — Table Redesign
+
+- Refonte complète de l’écran de jeu autour d’une hiérarchie visuelle inspirée des grands poker-roguelikes : cockpit de score à gauche, Atouts en rack supérieur, table centrale plus lisible et actions renforcées.
+- Nouvelle identité visuelle sombre, bordeaux, or, bleu et rouge, sans reprendre les assets ni l’habillage d’un autre jeu.
+- Score de Mise, objectif, progression, Mains, Défausses, Bourse et calcul Jetons × Multiplicateur rendus beaucoup plus visibles.
+- Atouts agrandis et présentés comme une vraie rangée de cartes ; consommables compactés sous le rack.
+- Main légèrement agrandie, sélection plus marquée et cartes améliorées visuellement selon leur amélioration.
+- Ajout des raccourcis clavier : **1–8** pour sélectionner les cartes, **Entrée** pour jouer, **D** pour défausser et **Échap** pour fermer les interfaces.
+- Amélioration de l’accessibilité clavier du launcher et gestion du focus dans les overlays.
+- Persistance du volume débouncée pour éviter une écriture Foundry à chaque mouvement du curseur.
+- Nouvelle sauvegarde atomique regroupant la run et les Chroniques dans un seul bundle, avec migration transparente des réglages legacy.
+- Ajout d’un RNG seedé persistant par run.
+- Une même seed reproduit l’ordre du deck, les tirages de boutique, les effets aléatoires et l’ordre des Boss.
+- Les huit Boss sont maintenant mélangés par run tout en apparaissant chacun une fois avant répétition.
+- Suppression des anciens compteurs de progression devenus inutilisés.
+- Schéma d’état porté à la version 3 et schéma de run à la version 3.
+- Tests automatiques étendus à la reproductibilité des seeds, à l’ordre du deck et à la sauvegarde atomique.
+
+
 ## 0.5.5 — Stabilisation
 
 - Correction de l’évaluation des Suites, Couleurs et Quintes Flush avec **Four Fingers** : les combinaisons utilisent désormais le vrai sous-ensemble de cartes qui score.
