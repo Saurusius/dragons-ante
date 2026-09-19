@@ -16,19 +16,21 @@ import {
   applyBoosterChoice
 } from "./deck-engine.js";
 
+import {
+  jokerPrice,
+  sellValue,
+  spendingFloor,
+  canSpend
+} from "./economy-engine.js";
+
+export { jokerPrice, sellValue, spendingFloor, canSpend };
+
 const RARITY_WEIGHTS = [
   ["common", 65],
   ["uncommon", 25],
   ["rare", 9],
   ["legendary", 1]
 ];
-
-const COSTS = {
-  common: 4,
-  uncommon: 6,
-  rare: 9,
-  legendary: 14
-};
 
 function randomChoice(items, random = Math.random) {
   return items[Math.floor(random() * items.length)];
@@ -46,35 +48,6 @@ function weightedRarity(random = Math.random) {
 
 function hasAtout(state, id) {
   return state.jokers?.includes(id);
-}
-
-export function jokerPrice(idOrDef) {
-  const def = typeof idOrDef === "string" ? JOKER_MAP.get(idOrDef) : idOrDef;
-  if (!def) return 0;
-  return COSTS[def.rarity] ?? 5;
-}
-
-export function sellValue(state, id) {
-  ensureJokerState(state);
-  const def = JOKER_MAP.get(id);
-  if (!def) return 0;
-
-  let value = Math.max(1, Math.floor(jokerPrice(def) / 2));
-  value += Math.max(0, Number(state.globalSellBonus || 0));
-
-  if (id === "egg") {
-    value += Math.max(0, Number(state.jokerState?.["egg"]?.sellBonus || 0));
-  }
-
-  return value;
-}
-
-export function spendingFloor(state) {
-  return hasAtout(state, "credit-card") ? -20 : 0;
-}
-
-export function canSpend(state, amount) {
-  return Number(state.money || 0) - Number(amount || 0) >= spendingFloor(state);
 }
 
 function offerPool(state) {
@@ -211,6 +184,7 @@ export function chooseBoosterReward(state, index) {
 
 export function rerollShop(state) {
   const shop = ensureShop(state);
+  if (shop.pendingBooster) return { ok: false, reason: "Choisissez d’abord la récompense du booster ouvert." };
 
   let cost = 0;
   if (shop.freeRerolls > 0) {
