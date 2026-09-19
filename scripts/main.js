@@ -196,7 +196,7 @@ Hooks.once("ready", async () => {
     const migrated = migrateStableState(state);
     applyProfileToRun(profile, state);
     for (const id of state.jokers || []) { if (!profile.collection.jokers.includes(id)) profile.collection.jokers.push(id); }
-    if (state.run?.phase === "shop" && state.run.shop?.pendingBooster) overlay = { type: "booster" };
+    if (state.run?.phase === "shop" && state.run.shop?.pendingBooster) { currentView = "game"; overlay = { type: "booster" }; }
 
     if (state.status !== "playing" && state.run.phase === "blind" && !state.run.roundResolved) {
       settleRound(state);
