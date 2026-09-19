@@ -211,21 +211,27 @@ export function scoreWithJokers({ state, cards, baseResult, preview=false }) {
   function cardTrigger(card, repeated=false) {
     chips += Number(card.chips||0) + Number(card.bonusChips||0);
     if (card.enhancement === "stone") chips += 50;
-    if (card.enhancement === "gold" && hasJoker(state,"golden-ticket")) moneyGain += 4;
+    if (card.enhancement === "gold" && hasJoker(state,"golden-ticket")) {
+      moneyGain += 4;
+      markUsed("golden-ticket");
+    }
     if (card.edition === "gilded") chips += 15;
     if (card.edition === "runic") mult += 2;
     if (card.edition === "prismatic") xmult *= 1.25;
     if (card.seal === "astral") mult += 1;
     if (card.seal === "merchant" && !preview) moneyGain += 1;
 
-    forEachEffective(state,(id)=>{
-      markUsed(id);
+    forEachEffective(state,(id,slot,originalId)=>{
+      const before = { chips, mult, xmult, moneyGain };
       switch(id) {
         case "greedy-joker": if(card.suit==="diamonds") mult+=3; break;
         case "lusty-joker": if(card.suit==="hearts") mult+=3; break;
         case "wrathful-joker": if(card.suit==="spades") mult+=3; break;
         case "gluttonous-joker": if(card.suit==="clubs") mult+=3; break;
         case "fibonacci": if(["A","2","3","5","8"].includes(card.rank)) mult+=8; break;
+        case "eight-ball":
+          if (!preview && card.rank==="8" && chance(state,1,4,rng) && grantRandomConsumable(state,"arcanes",rng)) markUsed(originalId);
+          break;
         case "scary-face": if(isFace(card,state)) chips+=30; break;
         case "even-steven": if([2,4,6,8,10].includes(card.rankOrder)) mult+=4; break;
         case "odd-todd": if([14,9,7,5,3].includes(card.rankOrder)) chips+=31; break;
@@ -247,6 +253,9 @@ export function scoreWithJokers({ state, cards, baseResult, preview=false }) {
         case "the-idol": if(card.suit===state.idolSuit && card.rank===state.idolRank) xmult*=2; break;
         case "wee-joker": if(card.rank==="2") chips += Number(getState(state,"wee-joker").chips||0); break;
       }
+      if (chips !== before.chips || mult !== before.mult || xmult !== before.xmult || moneyGain !== before.moneyGain) {
+        markUsed(originalId);
+      }
     });
   }
 
@@ -256,18 +265,18 @@ export function scoreWithJokers({ state, cards, baseResult, preview=false }) {
   for (let index=0; index<scoringCards.length; index++) {
     const card=scoringCards[index];
     let triggers=1;
-    if (hasJoker(state,"hack") && ["2","3","4","5"].includes(card.rank)) triggers++;
-    if (hasJoker(state,"sock-and-buskin") && isFace(card,state)) triggers++;
-    if (hasJoker(state,"dusk") && state.handsRemaining===1) triggers++;
-    if (hasJoker(state,"seltzer") && (getState(state,"seltzer").handsLeft ?? 10)>0) triggers++;
-    if (hasJoker(state,"hanging-chad") && index===0) triggers+=2;
+    if (hasJoker(state,"hack") && ["2","3","4","5"].includes(card.rank)) { triggers++; markUsed("hack"); }
+    if (hasJoker(state,"sock-and-buskin") && isFace(card,state)) { triggers++; markUsed("sock-and-buskin"); }
+    if (hasJoker(state,"dusk") && state.handsRemaining===1) { triggers++; markUsed("dusk"); }
+    if (hasJoker(state,"seltzer") && (getState(state,"seltzer").handsLeft ?? 10)>0) { triggers++; markUsed("seltzer"); }
+    if (hasJoker(state,"hanging-chad") && index===0) { triggers+=2; markUsed("hanging-chad"); }
     if (card.seal === "blood") triggers += 1;
     for(let t=0;t<triggers;t++) cardTrigger(card,t>0);
   }
 
   // Independent / hand-level effects.
   forEachEffective(state,(id,slot,originalId)=>{
-    markUsed(id);
+    const before = { chips, mult, xmult, moneyGain };
     const js=getState(state,id);
     switch(id) {
       case "joker": mult+=4; break;
@@ -332,8 +341,8 @@ export function scoreWithJokers({ state, cards, baseResult, preview=false }) {
       case "yorick": xmult*=Number(js.xmult||1); break;
       case "acrobat": if(state.handsRemaining===1) xmult*=3; break;
       case "swashbuckler": {
-        const others=state.jokers.filter(x=>x!==originalId).map(x=>JOKER_MAP.get(x)).filter(Boolean);
-        mult+=others.reduce((s,j)=>s+Math.max(1,Math.round((j.number%9+2)/2)),0);
+        const others=state.jokers.filter((_id,index)=>index!==slot);
+        mult+=others.reduce((sum,jokerId)=>sum+sellValue(state,jokerId),0);
         break;
       }
       case "seeing-double": {
@@ -343,13 +352,21 @@ export function scoreWithJokers({ state, cards, baseResult, preview=false }) {
       }
       case "hit-the-road": xmult*=Number(js.xmult||1); break;
     }
+    if (chips !== before.chips || mult !== before.mult || xmult !== before.xmult || moneyGain !== before.moneyGain) {
+      markUsed(originalId);
+    }
   });
 
   // Held-card money effects; Mime doubles held triggers.
   const heldRepeats=hasJoker(state,"mime") ? 2 : 1;
   for(let pass=0;pass<heldRepeats;pass++) {
     if(hasJoker(state,"reserved-parking") && !preview) {
+      const beforeMoney = moneyGain;
       for(const card of held) if(isFace(card,state) && chance(state,1,2,rng)) moneyGain+=1;
+      if (moneyGain > beforeMoney) {
+        markUsed("reserved-parking");
+        if (pass > 0 && hasJoker(state,"mime")) markUsed("mime");
+      }
     }
   }
 
